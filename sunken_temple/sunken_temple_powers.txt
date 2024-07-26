@@ -1,0 +1,125 @@
+1) Crowd Favorite - Take a -1 penalty to all future rolls. If you survive the temple, you are the winner.  All other players immediately die, even if they have already completed the temple.
+2) Paranoid - Gain an additional discovery each turn.
+3) Daredevil - Gain +2 to your roll if blind moving into an undiscovered card.
+4) Voodoo Mon - Select a player during your turn.  That player takes a -1 penalty on their next roll.
+5) Temple Engineer - The card you are in will not collapse as long as it has at least one support.
+6) Chaos Theory - You may 'undiscover', or turn upside down, any number of adjacent cards during your turn.  You may use this power before and after moving.
+7) Temple Runner - Successfully moving into an undiscovered card refunds the move action to your current turn.
+8) The Drowned God - Spades act as a combination of Diamonds and Clubs.  Instead of dying to a spade, you will now lose your next turn and take a -1 wound.
+9) Kaio Ken - Gain +9000 to your next roll.  You may only use this power once.
+10) Head Start - You get the first 5 turns of the game. Play then continues with the player who would have gone first originally.
+11) Flatulence - Other players take a -2 penalty to rolls if standing in the same card as you.
+12) Barricades - Other players must roll a 12 to enter a Joker/Exit.
+13) Snake Eyes - If at least two of your dice are '1' from your previous roll, you may reroll all your dice.
+14) Achy Breaky Hearts - Other players take a -1 to their roll when moving into a heart.
+15) Entomb - Select an adjacent discovered non-Joker card that is unoccupied.  Permanently remove that card from the temple. You may only use this power once.
+16) Berserker - You may spend your move action to instead attack a player in the same card as you.  That player takes a -1 wound.
+17) Nein Nein Nein - Other players are not allowed to move into any card of value '9'.
+18) Booby Traps - Before the game begins, secretly record the value and suit of 3 non-Joker cards of your choice. These cards are now booby-trapped; the first players (including yourself) to enter these cards lose their next two turns and take a -2 wound.
+19) Cretan Labyrinth - Before the game begins, select a new token and place it on any card or card slot.  This token represents the Minotaur.  After each of your turns, the Minotaur randomly moves to an adjacent card.  The Minotaur will kill and devour any other player he contacts; you are immune to the Minotaur.
+20) Love Potion - Before the game begins, select two other players.  You have slipped these players a love potion, and they have fallen in love with each other.  These players are not allowed to move farther than 3 moves from each other, until death do them part.
+21) Foul Mouth - Select a player during your turn.  Yell an insult at that player that echoes through the temple, and roll a die.  If the value of the die is '6', that player is deeply hurt by your insult and loses their next turn.
+22) Daredevilier - Every turn you have the option to move again.  Take a -3 penalty to your second roll, treat the second card as a spade. You may not use the extra move to enter a Joker.
+23) 4th Dimension Chess - Reverse the values of all cards only for yourself.  You may only use this power once, and the effects are permanent.
+24) Bob the Builder - On your turn you may build an impassible wall between any two discovered non-Joker cards.  You may only use this power once.
+25) Lucky Number Sleven - If 3 cards of value '7' are discovered, you alone may exit the temple through a '7'.
+26) Heart of Davy Jones - Name a card at the beginning of the game.  Gain a +1 bonus to your rolls while the card is undiscovered.  Take a -1 penalty to all rolls if the card is discovered.
+27) The Kamehameha - You may sacrifice your move action this turn to gain a stacking +1 bonus to your next roll.  The bonus is lost upon rolling or moving.
+28) Portal - You may spend your move action to switch two discovered cards in the temple as long as they are the same value.
+29) Loaded Dice - You may spend your discover action to reduce your next roll by an amount of your choice.  If you succeed your roll, everyone else's next rolls are also reduced by the same amount.
+30) Sadism - Each time another player dies or is wounded, gain one of the following of your choice to your next turn: an extra discovery action, an extra move action, or a +1 to your next move check.
+31) Seer - Instead of a discovery action you may secretly peek at any undiscovered card in the temple.  Return that card face-down once done.
+32) Blood Magic - You may inflict a -1 wound on yourself.  If you do, gain an extra die for your next roll if neither the origin or destination cards are hearts.
+33) Martyr - If one of your dice from the last roll is of value '6', you may pickup that die and any other die to reroll.
+34) Thrill Seeker - Gain +1 to your roll if moving into a higher value card.  Take a -1 penalty to your roll if moving into a lower value card.
+35) Well Rested - Sleep in and miss your first 4 turns of the game.  Gain +1 to all your rolls the rest of the game.
+36) Oogie Boogie - You may cast Oogie Boogie's die at the beginning of your turn: 6: +3 to next roll. 5: +2 to next roll. 4: +1 to next roll. 3: No effect. 2: Lose your turn. 1: Lose 2 turns.
+37) Pokemon Master - You may use one pokemon power per turn: Magikarp, Surf!: Gain a +1 to next roll if your card has 3 or less supports. Metapod, Harden!: Spend your move action to heal one wound. Sandshrew, SandBlast!: All players currently in the same card as you cannot discover until your next turn.
+38) Meditation - At the beginning of your turn you may choose to meditate.  If you do, your discovery and move actions are moved to your next turn and your current turn ends.  Does not stack.
+39) Portal 2 - You may spend your move action to teleport from your current card to any other discovered card of the same value.  No roll required.
+40) Quantum Superposition - You may split yourself into 2 tokens.  Tokens may move apart.  Tokens share the single move and discovery actions. Wounds, death, and other effects affect both tokens.  Upon contacting another player or your own decision, become whole again and discard the other token.
+41) It's Alive - Upon your first spades death, Dr. Frankenstein ressurects you as an undead monster.  As a monster, at the start of each turn you have a 50% chance to lose the whole turn.  Monsters have +1 to all rolls.
+42) Nosferatu - Upon your first spades death, lose your next 2 turns then ressurect as a Vampire.  As a vampire, you may bite a target player in the same card as you, which gives you +1 to your next roll and gives a -1 wound to the target.  Vampires cannot enter hearts.
+43) Hyrule Gem Collector - Stepping onto the following cards gives you powers: Goron Ruby (10D): +1 to all rolls. Kokiri Emerald (10H): Ignore other players' card occupations. Zora Sapphire (10C): Entering a card with 3 or less supports refunds move action.
+44) Lycanthrope - Stepping onto a Spade transforms you into a Werewolf.  As a werewolf, at the end of your turn deal out a -1 wound to each player in the same card as you. Stepping onto a Heart transforms you back to a human.
+45) Turbo Boots - You may start your turn with 3 move actions.  You may only use this power once.
+46) The Wolverine - You may spend your move action to heal all wounds.
+47) Total Recall - You may spend your discover action to create a recall beacon in your current card; this will destroy any existing recall beacons.  You may spend your move action to teleport back to the recall beacon's card.
+48) Herculean Strength - You may spend your move action to roll a dice.  If the value of the dice is 3 or greater, you may throw an opponent from the same card as you into any adjacent discovered card.  The thrown player does not need a roll check.
+49) It's Time to Duel! - At the end of your turn you may challenge an opponent in the same card as you to a duel.  You each roll one dice. The higher roller wins and the loser loses their next turn.  You get a +1 to this duel roll, and you win a draw.
+50) Fantastic Four - When rolling dice for a move check, your opponents must reroll every dice of value 4.
+51) Social Distancing - When moving into an occupied card, your opponents take an additional -1 penalty to their roll.
+52) Masochist - If you are wounded, start each turn with an additional N-1 move actions and N-1 discover actions, where N is the number of wounds you have.
+53) Lone Wolf - If no opponents are in or adjacent to your current card, gain a +1 to your move roll.
+54) Quicksilver - Take a permanent -1 penalty on all move checks. Start each turn with an extra move action.
+55) Shin Splints - Each turn you have the option to use an additional move action.  If you do, take a -1 wound after this extra move.  You cannot use this extra move to enter a Joker, an undiscovered card, or a Heart.
+56) Best Friend - At the start of the game designate another player.  That player is your best friend.  Gain a +1 to each move check when either in the same card or adjacent card to your friend.
+57) Sympathy Pains - At the start of the game designate another player.  Whenever you receive a wound, that player is also wounded for the same amount.  You may spend a move action to target a different player instead for Sympathy Pains.
+58) Pits of Despair - Whenever you enter a Spade, all Spades on the map explode.  Other players standing on a Spade lose their next turn and take a -1 wound.
+59) Area 51 - At the start of the game designate two undiscovered cards from different columns that are neither in the Joker column.  Place tokens on these two cards; you are the only player allowed to enter them.
+60) Maginot Line - At the start of the game, designate a non-Joker column of cards to be the Maginot Line.  All other players receive a -2 penalty when move checking into any card in this column.
+61) Jackpot - If your move check equals the value card you are moving into, your move action is refunded this turn.
+62) Edgelord - For every 2 unique Spade cards you step on, gain a permanent +1 to move checks.
+63) The Number of the Beast - Immediately after the 3rd card of value '6' has been discovered in the temple, place a new token on that card to represent the 'Beast'.  You control the Beast and may sacrifice your discovery action to give the Beast a move action to perform during your turn.  The Beast moves/wounds/dies like a regular player.  If the Beast touches another player, they die.
+
+
+
+
+Easier:
+2,3,5,8,9,13,23,25,26,27,32,33,34,35,37,39,41,43,46,53,56,62
+Harder:
+1,4,6,11,12,14,15,16,17,18,19,20,21,24,29,42,44,48,49,50,51,54,57,58,59,60
+Neutral:
+7,10,22,28,30,31,36,38,40,45,47,52,55,61
+
+
+
+
+
+
+
+1) Crowd Favorite - https://www.freevector.com/uploads/vector/preview/4914/FreeVector-Party-Crowd-Background.jpg
+2) Paranoid - https://i.pinimg.com/originals/a3/3a/d0/a33ad0f62304243f9f6881a902ac4a9b.jpg
+3) Daredevil - https://www.google.com/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwiy7p2gjKvdAhWC7VMKHbxkCWUQjRx6BAgBEAU&url=https%3A%2F%2Fwww.pinterest.com%2Fpin%2F23995810491189188%2F&psig=AOvVaw0FBqJlACGdO4DwFFwRp2e2&ust=1536485372378444
+4) Voodoo Mon - https://cdn.shopify.com/s/files/1/0100/1252/products/VoodooPriest.jpg?v=1533767322
+5) Temple Engineer - 
+6) Chaos Theory - https://cdn-images-1.medium.com/max/1440/1*bsYCkBd9So8ojNbrsiKPnQ.jpeg
+7) Temple Runner - https://vignette.wikia.nocookie.net/templerun/images/7/74/Temple_Run_2_Blazing_Sands_App_Icon.jpg/revision/latest?cb=20160621171723
+8) The Drowned God - https://favim.com/orig/201104/14/Favim.com-17738.jpg
+9) Kaio Ken - https://i.ytimg.com/vi/XSlzVJbVO24/maxresdefault.jpg
+10) Head Start - https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQHaTttdkFVod5ZIvbTQlCQkL7X8NriN5cQuOEyJ8Bm365JiTkcQ
+11) Flatulence - https://fanart.tv/fanart/movies/790/movieposter/the-fog-5752e83c7877e.jpg
+12) Barricades - 
+13) Snake Eyes - https://i.pinimg.com/originals/1c/8a/e0/1c8ae04f548f8f8a3b6531e83e0c134b.png
+14) Achy Breaky Hearts - https://images.theconversation.com/files/118133/original/image-20160411-21959-ps6nll.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=926&fit=clip
+15) Entomb - https://i.pinimg.com/originals/fc/81/28/fc81289d4cca5f820c6b74a68252272c.jpg
+16) Berserker - https://pre00.deviantart.net/b210/th/pre/f/2016/223/6/f/6f6ab40c8aaf95eef90b52cf60429f67-dadgmyz.jpg
+17) Deuces - https://res.cloudinary.com/teepublic/image/private/s--jl8VcORx--/t_Preview/b_rgb:c62b29,c_limit,f_jpg,h_630,q_90,w_630/v1497965435/production/designs/1681065_0.jpg
+18) Booby Traps - https://peteyeomans.files.wordpress.com/2013/03/it__s_a_trap_wallpaper_by_thegreatbrandino-d343b8c.jpg
+19) Cretan Labyrinth - https://images.fineartamerica.com/images-medium-large-5/taurus-ii-rob-carlos.jpg
+20) Love Potion - https://cdn2.vectorstock.com/i/1000x1000/26/16/bottle-with-love-potion-icon-magic-elixir-design-vector-19692616.jpg
+21) Foul Mouth - https://i.pinimg.com/originals/85/09/f6/8509f60f68bb5ed41eb7bbd6b05dc431.jpg
+22) Daredevilier - https://orig00.deviantart.net/6d9f/f/2009/237/2/d/daredevil_roof_jump_by_manarama.jpg
+23) 4th Dimension Chess - https://resources.wimpmusic.com/images/08c94fb9/0b89/4f4f/91e8/eed3332b780b/1280x1280.jpg
+24) Bob the Builder - 
+25) Lucky Number Sleven - https://is5-ssl.mzstatic.com/image/thumb/Purple62/v4/74/91/24/74912408-4c63-d43f-2465-c2e67ce63bae/source/512x512bb.jpg
+26) Heart of Davy Jones - https://orig00.deviantart.net/f340/f/2007/089/c/a/__davy_jones___by_sephirothsheart.jpg
+27) The Kamehameha - https://res.cloudinary.com/teepublic/image/private/s--qsJFyugL--/t_Preview/b_rgb:262c3a,c_limit,f_jpg,h_630,q_90,w_630/v1458777052/production/designs/456146_1.jpg
+28) Portal - 
+29) Loaded Dice - https://previews.123rf.com/images/lexanda/lexanda1705/lexanda170500037/79018179-cheat-lucky-dice-with-six-spots-on-every-side-great-luck-symbol-flat-icon-black-and-white-vector-ill.jpg
+30) The Gambler - http://www.jamesdarum.com/IMG/CardPlayer_WEB.jpg
+31) Seer - https://www.wallpaperup.com/uploads/wallpapers/2013/01/23/30919/84ebbab6ab8c35b7a0c3a487ee7d9c07.jpg
+32) Blood Magic - https://pre00.deviantart.net/5854/th/pre/f/2014/154/1/0/blood_magic_by_dekades8-d7kwthg.jpg
+33) Martyr - 
+34) Thrill Seeker - 
+35) Well Rested - 
+36) Oogie Boogie - https://cdna.artstation.com/p/assets/images/images/008/204/800/large/iruko-art-boogieman-redes.jpg?1511178940
+37) Pokemon Master - 
+38) Meditation - https://dmui6sf49ro3c.cloudfront.net/services/pictures/medium/237880/1495055725_blob
+39) Carnival Worker - https://i.pinimg.com/originals/11/07/e8/1107e8c5b77b07fda03326dc349f8e07.jpg
+40) Quantum Superposition - https://images.fineartamerica.com/images-medium-large-5/1-quantum-entanglement-harald-ritsch.jpg
+41) It's Alive - http://3.bp.blogspot.com/-o1cQwbppaM8/T9wUfxwFLcI/AAAAAAAAIhs/Sy9Q1DYeBJs/s1600/jones.jpg
+42) Nosferatu - https://media-dominaria.cursecdn.com/attachments/24/460/635032478685011941.jpg
+43) Hyrule Gem Collector - https://img00.deviantart.net/bda6/i/2015/110/0/e/the_spiritual_stones__v2_by_john1315-d6lm18e.jpg
+44) Lycanthrope - https://pre00.deviantart.net/5846/th/pre/i/2015/222/8/0/werewolf_calendar_2016_by_kyoht-d953yv6.png
+45) Meta - http://res.cloudinary.com/alien-policy/image/upload/v1510014329/submerged-ancient-city-cuba_zqjzlp.jpg

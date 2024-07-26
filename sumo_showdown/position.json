@@ -1,0 +1,17 @@
+{
+  "Player_A": {
+    "Hand": [
+    ],
+    "Discard": ["AD", "KD", "2C", "6S", "5C", "7C", "6H", "9C", "JS"],
+    "Rests": 1,
+    "Human": 1
+  },
+  "Player_B": {
+    "Hand": ["AC", "3C", "2D", "4D", "2H", "3H", "4H", "AS", "2S", "7S", "8H", "JC", "QH"
+    ],
+    "Discard": [],
+    "Rests": 0,
+    "Human": 0
+  },
+  "Position": 2
+}
