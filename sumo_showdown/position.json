@@ -1,17 +1,15 @@
 {
   "Player_A": {
-    "Hand": [
-    ],
-    "Discard": ["AD", "KD", "2C", "6S", "5C", "7C", "6H", "9C", "JS"],
-    "Rests": 1,
-    "Human": 1
-  },
-  "Player_B": {
-    "Hand": ["AC", "3C", "2D", "4D", "2H", "3H", "4H", "AS", "2S", "7S", "8H", "JC", "QH"
-    ],
-    "Discard": [],
+    "Hand": [ "6C", "7C", "3H", "7H", "8H", "JS", "QS" ],
+    "Discard": ["2C", "2H", "2D"],
     "Rests": 0,
     "Human": 0
   },
-  "Position": 2
+  "Player_B": {
+    "Hand": ["KC", "6D", "KD", "9S"],
+    "Discard": ["10C", "9H"],
+    "Rests": 0,
+    "Human": 0
+  },
+  "Position": 1
 }

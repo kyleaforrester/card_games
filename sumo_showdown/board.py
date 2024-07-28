@@ -39,11 +39,11 @@ class Board:
         discards = []
         if player == 'a':
             while len(discards) < min(3, len(self.a_hand)) and all(map(lambda x: x in a_hand, discards)):
-                response = input('Your hand: {}\nEnter the 3 cards to discard from your hand in csv format (e.g. AS, JD, 3C): '.format(self.a_hand))
+                response = input('Your hand: {}\nEnter the 3 cards to discard from your hand in csv format: '.format(self.a_hand))
                 discards = [card.Card(s.strip()) for s in response.split(',')]
         elif player == 'b':
             while len(discards) < min(3, len(self.b_hand)) and all(map(lambda x: x in b_hand, discards)):
-                response = input('Your hand: {}\nEnter the 3 cards to discard from your hand in csv format (e.g. AS, JD, 3C): '.format(self.b_hand))
+                response = input('Your hand: {}\nEnter the 3 cards to discard from your hand in csv format: '.format(self.b_hand))
                 discards = [card.Card(s.strip()) for s in response.split(',')]
         return discards
 

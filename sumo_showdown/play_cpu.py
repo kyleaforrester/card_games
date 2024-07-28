@@ -68,6 +68,13 @@ while not board.a_win and not board.b_win:
                 print(board)
             else:
                 print('Not a valid command: {}'.format(response))
+    else:
+        print(board)
+        a_move = random.choices(a_moves, weights=a_weights, k=1)[0]
+        b_move = random.choices(b_moves, weights=b_weights, k=1)[0]
+        print('Player A plays {}'.format(a_move))
+        print('Player B plays {}'.format(b_move))
+        board.resolve_moves(a_move, b_move)
             
 if board.a_win:
     print(board)

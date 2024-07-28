@@ -54,6 +54,9 @@ class Card:
             return True
         return False
 
+    def __hash__(self):
+        return hash((self.value, self.suit))
+
     def __str__(self):
         return self.to_string()
 

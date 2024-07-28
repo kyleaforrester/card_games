@@ -27,7 +27,7 @@ def evaluate_board(board):
             b_cards_better = len(list(filter(lambda x: (x.suit == 'C' and x.value > c.value) or (x.suit == 'S' and x.value > c.value), b_cards)))
             b_cards_c_s = len(list(filter(lambda x: x.suit in ('C', 'S'), b_cards)))
             # No floor, linear degrading
-            value = 1 - (b_cards_better / b_cards_c_s)
+            value = 1 - (b_cards_better / b_cards_c_s) if b_cards_c_s > 0 else 0
             if c in board.a_hand:
                 a_hand_value += value
             else:
@@ -64,7 +64,7 @@ def evaluate_board(board):
             a_cards_better = len(list(filter(lambda x: (x.suit == 'C' and x.value > c.value) or (x.suit == 'S' and x.value > c.value), a_cards)))
             a_cards_c_s = len(list(filter(lambda x: x.suit in ('C', 'S'), a_cards)))
             # No floor, linear degrading
-            value = 1 - (a_cards_better / a_cards_c_s)
+            value = 1 - (a_cards_better / a_cards_c_s) if a_cards_c_s > 0 else 0
             if c in board.b_hand:
                 b_hand_value += value
             else:
