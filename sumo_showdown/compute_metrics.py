@@ -7,31 +7,34 @@ import sys
 import json
 import random
 
-GAME_COUNT = 1500
+GAME_COUNT = 500
 
 def generate_sumos(card_deck):
-    random.shuffle(card_deck)
     a_sumo = []
     b_sumo = []
-    a_sum = 0
-    b_sum = 0
-    for c in card_deck:
-        if a_sum == 60 and b_sum == 60:
-            break
-        if random.randint(1,2) == 1:
-            if c.value + a_sum <= 60:
-                a_sumo.append(c)
-                a_sum += c.value
-            elif c.value + b_sum <= 60:
-                b_sumo.append(c)
-                b_sum += c.value
-        else:
-            if c.value + b_sum <= 60:
-                b_sumo.append(c)
-                b_sum += c.value
-            elif c.value + a_sum <= 60:
-                a_sumo.append(c)
-                a_sum += c.value
+    while not any(map(lambda x: x.suit == 'C', a_sumo)) or not any(map(lambda x: x.suit == 'C', b_sumo)):
+        random.shuffle(card_deck)
+        a_sumo = []
+        b_sumo = []
+        a_sum = 0
+        b_sum = 0
+        for c in card_deck:
+            if a_sum == 50 and b_sum == 50:
+                break
+            if random.randint(1,2) == 1:
+                if c.value + a_sum <= 50:
+                    a_sumo.append(c)
+                    a_sum += c.value
+                elif c.value + b_sum <= 50:
+                    b_sumo.append(c)
+                    b_sum += c.value
+            else:
+                if c.value + b_sum <= 50:
+                    b_sumo.append(c)
+                    b_sum += c.value
+                elif c.value + a_sum <= 50:
+                    a_sumo.append(c)
+                    a_sum += c.value
     return (a_sumo, b_sumo)
     
 def play_game(board):
