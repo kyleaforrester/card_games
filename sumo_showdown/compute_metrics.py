@@ -7,18 +7,20 @@ import sys
 import json
 import random
 
-GAME_COUNT = 500
+GAME_COUNT = 100
 
 def generate_sumos(card_deck):
     a_sumo = []
     b_sumo = []
     while not any(map(lambda x: x.suit == 'C', a_sumo)) or not any(map(lambda x: x.suit == 'C', b_sumo)):
-        random.shuffle(card_deck)
+        deck = list(card_deck.keys())
+        random.shuffle(deck)
+        deck = sorted(deck, key=lambda x: card_deck[x])
         a_sumo = []
         b_sumo = []
         a_sum = 0
         b_sum = 0
-        for c in card_deck:
+        for c in deck:
             if a_sum == 50 and b_sum == 50:
                 break
             if random.randint(1,2) == 1:
@@ -35,6 +37,9 @@ def generate_sumos(card_deck):
                 elif c.value + a_sum <= 50:
                     a_sumo.append(c)
                     a_sum += c.value
+
+    for c in a_sumo + b_sumo:
+        card_deck[c] += 1
     return (a_sumo, b_sumo)
     
 def play_game(board):
@@ -47,13 +52,13 @@ def play_game(board):
         rounds += 1
                 
 
-card_deck = []
+card_deck = {}
 for s in ('C', 'D', 'H', 'S'):
     for v in ('A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'):
-        card_deck.append(card.Card(v + s))
+        card_deck[card.Card(v + s)] = 0
 
 card_scores = {}
-for c in card_deck:
+for c in list(card_deck.keys()):
     # To keep track of wins and losses
     card_scores[c] = [0,0]
 
@@ -83,4 +88,9 @@ for i in range(GAME_COUNT):
 
 for c in sorted(list(card_scores.items()), key=lambda x: (x[0].suit, x[0].value)):
     print('{}: {} W, {} L, {} Percentage'.format(c[0], c[1][0], c[1][1], round(100 * c[1][0] / (c[1][0] + c[1][1]), 2) if c[1][0] + c[1][1] > 0 else 0))
-    
+
+for s in ['C', 'D', 'H', 'S']:
+    suit_results = list(map(lambda y: y[1], filter(lambda x: x[0].suit == s, card_scores.items())))
+    percent_list = [x[0] / (x[0] + x[1]) for x in suit_results if x[0] + x[1] > 0]
+    avg_percent = sum(percent_list) / len(percent_list)
+    print('{} avg win percent: {}'.format(s, avg_percent))
