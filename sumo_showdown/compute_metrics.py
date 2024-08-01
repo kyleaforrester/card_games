@@ -7,7 +7,7 @@ import sys
 import json
 import random
 
-GAME_COUNT = 100
+GAME_COUNT = 10000
 
 def generate_sumos(card_deck):
     a_sumo = []
@@ -59,8 +59,8 @@ for s in ('C', 'D', 'H', 'S'):
 
 card_scores = {}
 for c in list(card_deck.keys()):
-    # To keep track of wins and losses
-    card_scores[c] = [0,0]
+    # To keep track of wins, losses, and draws
+    card_scores[c] = [0,0,0]
 
 # Play this many games
 for i in range(GAME_COUNT):
@@ -85,12 +85,16 @@ for i in range(GAME_COUNT):
             card_scores[c][1] += 1
         for c in b_sumo:
             card_scores[c][0] += 1
+    else:
+        print('Game {} ended. Draw!'.format(i))
+        for c in a_sumo + b_sumo:
+            card_scores[c][2] += 1
 
 for c in sorted(list(card_scores.items()), key=lambda x: (x[0].suit, x[0].value)):
-    print('{}: {} W, {} L, {} Percentage'.format(c[0], c[1][0], c[1][1], round(100 * c[1][0] / (c[1][0] + c[1][1]), 2) if c[1][0] + c[1][1] > 0 else 0))
+    print('{}: {} W, {} L, {} D, {} Percentage'.format(c[0], c[1][0], c[1][1], c[1][2], round(100 * (c[1][0] + 0.5*c[1][2]) / (c[1][0] + c[1][1] + c[1][2]), 2) if c[1][0] + c[1][1] + c[1][2] > 0 else 0))
 
 for s in ['C', 'D', 'H', 'S']:
     suit_results = list(map(lambda y: y[1], filter(lambda x: x[0].suit == s, card_scores.items())))
-    percent_list = [x[0] / (x[0] + x[1]) for x in suit_results if x[0] + x[1] > 0]
+    percent_list = [(x[0] + 0.5*x[2]) / (x[0] + x[1] + x[2]) for x in suit_results if x[0] + x[1] + x[2] > 0]
     avg_percent = sum(percent_list) / len(percent_list)
     print('{} avg win percent: {}'.format(s, avg_percent))
