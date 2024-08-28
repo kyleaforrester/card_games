@@ -2,6 +2,26 @@ import card
 import board
 import copy
 
+def evaluate_card(card, enemy_cards):
+    if card.suit == 'C':
+        enemy_cards_better = len(list(filter(lambda x: (x.suit == 'C' and x.value > card.value) or (x.suit == 'S' and x.value >= card.value), enemy_cards)))
+        # The floor is the chance the opponent does not rest (2/3) and plays no Push or Throw (3/4), which is 1/2. Exponential degrading
+        value = ((1 / (2**enemy_cards_better)) * 1/2) + (1/2)
+    elif card.suit == 'S':
+        enemy_cards_better = len(list(filter(lambda x: (x.suit == 'C' and x.value > card.value) or (x.suit == 'S' and x.value > card.value), enemy_cards)))
+        enemy_cards_c_s = len(list(filter(lambda x: x.suit in ('C', 'S'), enemy_cards)))
+        # No floor, linear degrading
+        value = 1 - (enemy_cards_better / enemy_cards_c_s) if enemy_cards_c_s > 0 else 0
+    elif card.suit == 'H':
+        enemy_cards_better = len(list(filter(lambda x: x.suit == 'H' and x.value > card.value, enemy_cards)))
+        # Floor is the chance the opponent does not rest (2/3) and plays no Slap (1/2), which makes the floor 2/3 and ceiling 1. Since Push is slightly weaker, make the ceiling 3/4, so the floor is 1/2. Exponential degrading
+        value = (3/4) * (((1 / (2**enemy_cards_better)) * (1/3)) + (2/3))
+    elif card.suit == 'D':
+        enemy_cards_better = len(list(filter(lambda x: x.suit == 'D' and x.value > card.value, enemy_cards)))
+        # Diamonds have the same floor as Slap, 2/3 and ceiling 1. Salt is slightly weaker, so decrease by 2/3. Exponential degrading
+        value = (2/3) * (((1 / (2**enemy_cards_better)) * (1/3)) + (2/3))
+    return value
+
 def evaluate_board(board):
     # Always given from Player a's perspective
     if board.a_win:
@@ -15,79 +35,20 @@ def evaluate_board(board):
     a_hand_value = 0
     a_discard_value = 0
     for c in a_cards:
-        if c.suit == 'C':
-            b_cards_better = len(list(filter(lambda x: (x.suit == 'C' and x.value > c.value) or (x.suit == 'S' and x.value >= c.value), b_cards)))
-            # The floor is the chance the opponent does not rest (2/3) and plays no Push or Throw (3/4), which is 1/2. Exponential degrading
-            value = ((1 / (2**b_cards_better)) * 1/2) + (1/2)
-            if c in board.a_hand:
-                a_hand_value += value
-            else:
-                a_discard_value += value
-        elif c.suit == 'S':
-            b_cards_better = len(list(filter(lambda x: (x.suit == 'C' and x.value > c.value) or (x.suit == 'S' and x.value > c.value), b_cards)))
-            b_cards_c_s = len(list(filter(lambda x: x.suit in ('C', 'S'), b_cards)))
-            # No floor, linear degrading
-            value = 1 - (b_cards_better / b_cards_c_s) if b_cards_c_s > 0 else 0
-            if c in board.a_hand:
-                a_hand_value += value
-            else:
-                a_discard_value += value
-        elif c.suit == 'H':
-            b_cards_better = len(list(filter(lambda x: x.suit == 'H' and x.value > c.value, b_cards)))
-            # Floor is the chance the opponent does not rest (2/3) and plays no Slap (1/2), which makes the floor 2/3 and ceiling 1. Since Push is slightly weaker, make the ceiling 3/4, so the floor is 1/2. Exponential degrading
-            value = (3/4) * (((1 / (2**b_cards_better)) * (1/3)) + (2/3))
-            if c in board.a_hand:
-                a_hand_value += value
-            else:
-                a_discard_value += value
-        elif c.suit == 'D':
-            b_cards_better = len(list(filter(lambda x: x.suit == 'D' and x.value > c.value, b_cards)))
-            # Diamonds have the same floor as Slap, 2/3 and ceiling 1. Salt is slightly weaker, so decrease by 2/3. Exponential degrading
-            value = (2/3) * (((1 / (2**b_cards_better)) * (1/3)) + (2/3))
-            if c in board.a_hand:
-                a_hand_value += value
-            else:
-                a_discard_value += value
+        value = evaluate_card(c, b_cards)
+        if c in board.a_hand:
+            a_hand_value += value
+        else:
+            a_discard_value += value
 
     b_hand_value = 0
     b_discard_value = 0
     for c in b_cards:
-        if c.suit == 'C':
-            a_cards_better = len(list(filter(lambda x: (x.suit == 'C' and x.value > c.value) or (x.suit == 'S' and x.value >= c.value), a_cards)))
-            # The floor is the chance the opponent does not rest (2/3) and plays no Push or Throw (3/4), which is 1/2. Exponential degrading
-            value = ((1 / (2**a_cards_better)) * 1/2) + (1/2)
-            if c in board.b_hand:
-                b_hand_value += value
-            else:
-                b_discard_value += value
-        elif c.suit == 'S':
-            a_cards_better = len(list(filter(lambda x: (x.suit == 'C' and x.value > c.value) or (x.suit == 'S' and x.value > c.value), a_cards)))
-            a_cards_c_s = len(list(filter(lambda x: x.suit in ('C', 'S'), a_cards)))
-            # No floor, linear degrading
-            value = 1 - (a_cards_better / a_cards_c_s) if a_cards_c_s > 0 else 0
-            if c in board.b_hand:
-                b_hand_value += value
-            else:
-                b_discard_value += value
-        elif c.suit == 'H':
-            a_cards_better = len(list(filter(lambda x: x.suit == 'H' and x.value > c.value, a_cards)))
-            # Floor is the chance the opponent does not rest (2/3) and plays no Slap (1/2), which makes the floor 2/3 and ceiling 1. Since Push is slightly weaker, make the ceiling 3/4, so the floor is 1/2. Exponential degrading
-            value = (3/4) * (((1 / (2**a_cards_better)) * (1/3)) + (2/3))
-            if c in board.b_hand:
-                b_hand_value += value
-            else:
-                b_discard_value += value
-        elif c.suit == 'D':
-            a_cards_better = len(list(filter(lambda x: x.suit == 'D' and x.value > c.value, a_cards)))
-            # Diamonds have the same floor as Slap, 2/3 and ceiling 1. Salt is slightly weaker, so decrease by 2/3. Exponential degrading
-            value = (2/3) * (((1 / (2**a_cards_better)) * (1/3)) + (2/3))
-            if c in board.b_hand:
-                b_hand_value += value
-            else:
-                b_discard_value += value
-            
-            
-            
+        value = evaluate_card(c, a_cards)
+        if c in board.b_hand:
+            b_hand_value += value
+        else:
+            b_discard_value += value
 
     a_value_spent = a_discard_value / (a_hand_value + a_discard_value)
     a_count_spent = len(board.a_discard) / (len(board.a_hand) + len(board.a_discard))

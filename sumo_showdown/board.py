@@ -1,4 +1,5 @@
 import card
+import engine
 
 class Board:
     def __init__(self, a_hand, a_discard, a_rests, a_human, b_hand, b_discard, b_rests, b_human, position, cpu_output):
@@ -50,9 +51,9 @@ class Board:
     def get_cpu_discards(self, player):
         discards = []
         if player == 'a':
-            discards = sorted(self.a_hand, key=lambda x: x.value)[:3]
+            discards = sorted(self.a_hand, key=lambda x: engine.evaluate_card(x, self.b_hand + self.b_discard))[:3]
         elif player == 'b':
-            discards = sorted(self.b_hand, key=lambda x: x.value)[:3]
+            discards = sorted(self.b_hand, key=lambda x: engine.evaluate_card(x, self.a_hand + self.a_discard))[:3]
 
         if self.cpu_output:
             print('Discarding {}'.format(','.join([c.to_string() for c in discards])))
@@ -72,15 +73,15 @@ class Board:
     def get_cpu_recycle_card(self, player, cards):
         r_card = None
         if player == 'a':
-            eligible_cards = self.a_discard + list(filter(lambda x: x.suit != 'D', cards))
+            eligible_cards = sorted(self.a_discard + list(filter(lambda x: x.suit != 'D', cards)), key=lambda x: engine.evaluate_card(x, self.b_hand + self.b_discard))
         elif player == 'b':
-            eligible_cards = self.b_discard + list(filter(lambda x: x.suit != 'D', cards))
+            eligible_cards = sorted(self.b_discard + list(filter(lambda x: x.suit != 'D', cards)), key=lambda x: engine.evaluate_card(x, self.a_hand + self.a_discard))
 
         nonsalt_eligible_cards = [c for c in eligible_cards if c.suit != 'D']
         if len(nonsalt_eligible_cards) > 0:
-            r_card = sorted(nonsalt_eligible_cards, key=lambda x: x.value)[-1]
+            r_card = nonsalt_eligible_cards[-1]
         elif len(eligible_cards) > 0:
-            r_card = sorted(eligible_cards, key=lambda x: x.value)[-1]
+            r_card = eligible_cards[-1]
         
         if self.cpu_output:
             if r_card is not None:
