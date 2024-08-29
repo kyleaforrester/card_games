@@ -7,7 +7,7 @@ import sys
 import json
 import random
 
-GAME_COUNT = 10000
+GAME_COUNT = 1000
 
 def generate_sumos(card_deck):
     a_sumo = []
@@ -63,6 +63,7 @@ for c in list(card_deck.keys()):
     card_scores[c] = [0,0,0]
 
 # Play this many games
+draws = 0
 for i in range(GAME_COUNT):
     a_sumo, b_sumo = generate_sumos(card_deck)
 
@@ -87,6 +88,7 @@ for i in range(GAME_COUNT):
             card_scores[c][0] += 1
     else:
         print('Game {} ended. Draw!'.format(i))
+        draws += 1
         for c in a_sumo + b_sumo:
             card_scores[c][2] += 1
 
@@ -98,3 +100,5 @@ for s in ['C', 'D', 'H', 'S']:
     percent_list = [(x[0] + 0.5*x[2]) / (x[0] + x[1] + x[2]) for x in suit_results if x[0] + x[1] + x[2] > 0]
     avg_percent = sum(percent_list) / len(percent_list)
     print('{} avg win percent: {}'.format(s, avg_percent))
+
+print('Draw percentage: {}%'.format(round(draws * 100 / GAME_COUNT, 2)))

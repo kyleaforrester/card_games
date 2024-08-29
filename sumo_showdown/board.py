@@ -39,21 +39,21 @@ class Board:
     def get_human_discards(self, player):
         discards = []
         if player == 'a':
-            while len(discards) < min(3, len(self.a_hand)) and all(map(lambda x: x in a_hand, discards)):
-                response = input('Your hand: {}\nEnter the 3 cards to discard from your hand in csv format: '.format(self.a_hand))
+            while len(discards) < min(4, len(self.a_hand)) and all(map(lambda x: x in a_hand, discards)):
+                response = input('Your hand: {}\nEnter the 4 cards to discard from your hand in csv format: '.format(self.a_hand))
                 discards = [card.Card(s.strip()) for s in response.split(',')]
         elif player == 'b':
-            while len(discards) < min(3, len(self.b_hand)) and all(map(lambda x: x in b_hand, discards)):
-                response = input('Your hand: {}\nEnter the 3 cards to discard from your hand in csv format: '.format(self.b_hand))
+            while len(discards) < min(4, len(self.b_hand)) and all(map(lambda x: x in b_hand, discards)):
+                response = input('Your hand: {}\nEnter the 4 cards to discard from your hand in csv format: '.format(self.b_hand))
                 discards = [card.Card(s.strip()) for s in response.split(',')]
         return discards
 
     def get_cpu_discards(self, player):
         discards = []
         if player == 'a':
-            discards = sorted(self.a_hand, key=lambda x: engine.evaluate_card(x, self.b_hand + self.b_discard))[:3]
+            discards = sorted(self.a_hand, key=lambda x: engine.evaluate_card(x, self.b_hand + self.b_discard))[:4]
         elif player == 'b':
-            discards = sorted(self.b_hand, key=lambda x: engine.evaluate_card(x, self.a_hand + self.a_discard))[:3]
+            discards = sorted(self.b_hand, key=lambda x: engine.evaluate_card(x, self.a_hand + self.a_discard))[:4]
 
         if self.cpu_output:
             print('Discarding {}'.format(','.join([c.to_string() for c in discards])))
@@ -66,9 +66,9 @@ class Board:
         elif player == 'b':
             eligible_cards = self.b_discard + list(filter(lambda x: x.suit != 'D', cards))
 
-        while len(eligible_cards) > 0 and (r_card is None or r_card not in eligible_cards):
-            r_card = card.Card(input('Your eligible recycling cards: {}\nEnter what card you wish to recycle: '.format(eligible_cards)))
-        return r_card
+        while len(eligible_cards) > 0 and (r_card is None or r_card not in [str(c) for c in eligible_cards]):
+            r_card = input('Your eligible recycling cards: {}\nEnter what card you wish to recycle: '.format(eligible_cards))
+        return card.Card(r_card)
 
     def get_cpu_recycle_card(self, player, cards):
         r_card = None
@@ -89,6 +89,14 @@ class Board:
             else:
                 print('Recycling card None')
         return r_card
+
+    def cmp_moves(self, a_cards, b_cards):
+        if len(a_cards) == 0 and len(b_cards) == 0:
+            return None
+        elif len(a_cards) > 0 and (len(b_cards) == 0 or (sum(map(lambda x: x.value, b_cards)) < sum(map(lambda x: x.value, a_cards))) or (sum(map(lambda x: x.value, b_cards)) == sum(map(lambda x: x.value, a_cards)) and max(a_cards, key=lambda x: x.value).value > max(b_cards, key=lambda x: x.value).value)):
+            return 'a'
+        else:
+            return 'b'
 
     def resolve_moves(self, a_cards, b_cards):
         a_cards = list(a_cards)
@@ -121,48 +129,60 @@ class Board:
         a_slap = list(filter(lambda x: x.suit == 'H', a_cards))
         b_slap = list(filter(lambda x: x.suit == 'H', b_cards))
 
+        throw_result = self.cmp_moves(a_throw, b_throw)
+        push_result = self.cmp_moves(a_push, b_push)
+        salt_result = self.cmp_moves(a_salt, b_salt)
+        slap_result = self.cmp_moves(a_slap, b_slap)
+
         # Throw
         if len(a_throw) > 0 and (len(b_throw) == 0 or b_throw[0].value < a_throw[0].value) and len(b_push) > 0 and (len(a_push) == 0 or b_push[0].value > a_push[0].value) and a_throw[0].value >= b_push[0].value:
             self.a_win = True
         elif len(b_throw) > 0 and (len(a_throw) == 0 or a_throw[0].value < b_throw[0].value) and len(a_push) > 0 and (len(b_push) == 0 or a_push[0].value > b_push[0].value) and b_throw[0].value >= a_push[0].value:
             self.b_win = True
+        
+        if throw_result == 'a' and push_result == 'b' and sum(map(lambda x: x.value, a_throw)) >= sum(map(lambda x: x.value, b_push)):
+            self.a_win = True
+        elif throw_result == 'b' and push_result == 'a' and sum(map(lambda x: x.value, b_throw)) >= sum(map(lambda x: x.value, a_push)):
+            self.b_win = True
 
         # Push
-        if len(a_push) > 0 and (len(b_push) == 0 or b_push[0].value < a_push[0].value):
+        if push_result == 'a':
             self.position += 1
             if self.position >= 5 and self.b_win == False:
                 self.a_win = True
-        elif len(b_push) > 0 and (len(a_push) == 0 or a_push[0].value < b_push[0].value):
+        elif push_result == 'b':
             self.position -= 1
             if self.position < 0 and self.a_win == False:
                 self.b_win = True
 
         # Salt
-        if len(a_salt) > 0 and (len(b_salt) == 0 or b_salt[0].value < a_salt[0].value):
-            if self.a_human:
-                recycle_card = self.get_human_recycle_card('a', a_cards)
-            else:
-                recycle_card = self.get_cpu_recycle_card('a', a_cards)
-            if recycle_card is not None:
-                self.a_hand.append(recycle_card)
-                if recycle_card in self.a_discard:
-                    self.a_discard.remove(recycle_card)
-                elif recycle_card in a_cards:
-                    a_cards.remove(recycle_card)
-        elif len(b_salt) > 0 and (len(a_salt) == 0 or a_salt[0].value < b_salt[0].value):
-            if self.b_human:
-                recycle_card = self.get_human_recycle_card('b', b_cards)
-            else:
-                recycle_card = self.get_cpu_recycle_card('b', b_cards)
-            if recycle_card is not None:
-                self.b_hand.append(recycle_card)
-                if recycle_card in self.b_discard:
-                    self.b_discard.remove(recycle_card)
-                elif recycle_card in b_cards:
-                    b_cards.remove(recycle_card)
+        if salt_result == 'a':
+            for i in range(2):
+                if self.a_human:
+                    recycle_card = self.get_human_recycle_card('a', a_cards)
+                else:
+                    recycle_card = self.get_cpu_recycle_card('a', a_cards)
+                if recycle_card is not None:
+                    self.a_hand.append(recycle_card)
+                    if recycle_card in self.a_discard:
+                        self.a_discard.remove(recycle_card)
+                    elif recycle_card in a_cards:
+                        a_cards.remove(recycle_card)
+        elif salt_result == 'b':
+            for i in range(2):
+                if self.b_human:
+                    recycle_card = self.get_human_recycle_card('b', b_cards)
+                else:
+                    recycle_card = self.get_cpu_recycle_card('b', b_cards)
+                if recycle_card is not None:
+                    self.b_hand.append(recycle_card)
+                    if recycle_card in self.b_discard:
+                        self.b_discard.remove(recycle_card)
+                    elif recycle_card in b_cards:
+                        b_cards.remove(recycle_card)
 
         # Slap
-        if len(a_slap) > 0 and (len(b_slap) == 0 or b_slap[0].value < a_slap[0].value):
+        if slap_result == 'a':
             if self.b_human:
                 discards = self.get_human_discards('b')
             else:
@@ -170,7 +190,7 @@ class Board:
             for c in discards:
                 self.b_hand.remove(c)
                 self.b_discard.append(c)
-        elif len(b_slap) > 0 and (len(a_slap) == 0 or a_slap[0].value < b_slap[0].value):
+        elif slap_result == 'b':
             if self.a_human:
                 discards = self.get_human_discards('a')
             else:
@@ -191,7 +211,7 @@ class Board:
         for hand in (self.a_hand, self.b_hand):
             moves = []
             for i in range(len(hand) - 1):
-                eligible_partners = [c for c in hand[i+1:] if c.suit != hand[i].suit]
+                eligible_partners = [c for c in hand[i+1:]]
                 for j in range(len(eligible_partners)):
                     moves.append((hand[i], eligible_partners[j]))
             for c in hand:
