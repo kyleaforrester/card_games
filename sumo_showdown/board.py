@@ -135,11 +135,6 @@ class Board:
         slap_result = self.cmp_moves(a_slap, b_slap)
 
         # Throw
-        if len(a_throw) > 0 and (len(b_throw) == 0 or b_throw[0].value < a_throw[0].value) and len(b_push) > 0 and (len(a_push) == 0 or b_push[0].value > a_push[0].value) and a_throw[0].value >= b_push[0].value:
-            self.a_win = True
-        elif len(b_throw) > 0 and (len(a_throw) == 0 or a_throw[0].value < b_throw[0].value) and len(a_push) > 0 and (len(b_push) == 0 or a_push[0].value > b_push[0].value) and b_throw[0].value >= a_push[0].value:
-            self.b_win = True
-        
         if throw_result == 'a' and push_result == 'b' and sum(map(lambda x: x.value, a_throw)) >= sum(map(lambda x: x.value, b_push)):
             self.a_win = True
         elif throw_result == 'b' and push_result == 'a' and sum(map(lambda x: x.value, b_throw)) >= sum(map(lambda x: x.value, a_push)):
