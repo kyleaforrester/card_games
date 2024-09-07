@@ -39,6 +39,9 @@ position = position['Position']
 
 board = board.Board(a_hand, a_discard, a_rests, a_human, b_hand, b_discard, b_rests, b_human, position, True)
 
+print(sorted([(c, engine.evaluate_card(c, board.b_hand)) for c in board.a_hand], key=lambda x: x[1]))
+print(sorted([(c, engine.evaluate_card(c, board.a_hand)) for c in board.b_hand], key=lambda x: x[1]))
+
 while not board.a_win and not board.b_win:
     board.a_human = False
     board.cpu_output = False
