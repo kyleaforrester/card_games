@@ -64,6 +64,7 @@ for c in list(card_deck.keys()):
 
 # Play this many games
 draws = 0
+sumo_sizes = {}
 for i in range(GAME_COUNT):
     a_sumo, b_sumo = generate_sumos(card_deck)
 
@@ -74,23 +75,35 @@ for i in range(GAME_COUNT):
     board = Board(a_hand, [], 0, 0, b_hand, [], 0, 0, 2, False)
     play_game(board)
 
+    # Initialize W,L,D for each sized sumo if not already present
+    if len(a_sumo) not in sumo_sizes:
+        sumo_sizes[len(a_sumo)] = [0,0,0]
+    if len(b_sumo) not in sumo_sizes:
+        sumo_sizes[len(b_sumo)] = [0,0,0]
+
     if board.a_win:
         print('Game {} ended. Player A wins!'.format(i))
         for c in a_sumo:
             card_scores[c][0] += 1
         for c in b_sumo:
             card_scores[c][1] += 1
+        sumo_sizes[len(a_sumo)][0] += 1
+        sumo_sizes[len(b_sumo)][1] += 1
     elif board.b_win:
         print('Game {} ended. Player B wins!'.format(i))
         for c in a_sumo:
             card_scores[c][1] += 1
         for c in b_sumo:
             card_scores[c][0] += 1
+        sumo_sizes[len(b_sumo)][0] += 1
+        sumo_sizes[len(a_sumo)][1] += 1
     else:
         print('Game {} ended. Draw!'.format(i))
         draws += 1
         for c in a_sumo + b_sumo:
             card_scores[c][2] += 1
+        sumo_sizes[len(a_sumo)][2] += 1
+        sumo_sizes[len(b_sumo)][2] += 1
 
 for c in sorted(list(card_scores.items()), key=lambda x: (x[0].suit, x[0].value)):
     print('{}: {} W, {} L, {} D, {} Percentage'.format(c[0], c[1][0], c[1][1], c[1][2], round(100 * (c[1][0] + 0.5*c[1][2]) / (c[1][0] + c[1][1] + c[1][2]), 2) if c[1][0] + c[1][1] + c[1][2] > 0 else 0))
@@ -100,5 +113,8 @@ for s in ['C', 'D', 'H', 'S']:
     percent_list = [(x[0] + 0.5*x[2]) / (x[0] + x[1] + x[2]) for x in suit_results if x[0] + x[1] + x[2] > 0]
     avg_percent = sum(percent_list) / len(percent_list)
     print('{} avg win percent: {}'.format(s, avg_percent))
+
+for s in sorted(list(sumo_sizes.items()), key=lambda x: x[0]):
+    print('Sumo Size {}: {} W, {} L, {} D, {} Total, {} Percentage'.format(s[0], s[1][0], s[1][1], s[1][2], s[1][0] + s[1][1] + s[1][2], round(100 * (s[1][0] + 0.5 * s[1][2])/(s[1][0] + s[1][1] + s[1][2]), 2)))
 
 print('Draw percentage: {}%'.format(round(draws * 100 / GAME_COUNT, 2)))
