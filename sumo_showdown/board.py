@@ -59,36 +59,28 @@ class Board:
             print('Discarding {}'.format(','.join([c.to_string() for c in discards])))
         return discards
 
-    def get_human_recycle_card(self, player, cards):
-        r_card = None
+    def get_human_recycle_cards(self, player, cards):
+        r_cards = []
         if player == 'a':
             eligible_cards = self.a_discard + list(filter(lambda x: x.suit != 'D', cards))
         elif player == 'b':
             eligible_cards = self.b_discard + list(filter(lambda x: x.suit != 'D', cards))
 
-        while len(eligible_cards) > 0 and (r_card is None or r_card not in [str(c) for c in eligible_cards]):
-            r_card = input('Your eligible recycling cards: {}\nEnter what card you wish to recycle: '.format(eligible_cards))
-        return card.Card(r_card)
+        while len(eligible_cards) > 0 and (len(r_cards) == 0 or any(map(lambda x: x not in [str(c) for c in eligible_cards], r_cards))):
+            r_cards = input('Your eligible recycling cards: {}\nEnter what cards you wish to recycle in csv format: '.format(eligible_cards))
+            r_cards = [s.strip() for s in r_cards.split(',')]
+        return [card.Card(c) for c in r_cards]
 
-    def get_cpu_recycle_card(self, player, cards):
-        r_card = None
+    def get_cpu_recycle_cards(self, player, cards):
         if player == 'a':
-            eligible_cards = sorted(self.a_discard + list(filter(lambda x: x.suit != 'D', cards)), key=lambda x: engine.evaluate_card(x, self.b_hand + self.b_discard))
+            eligible_cards = sorted(self.a_discard + list(filter(lambda x: x.suit != 'D', cards)), key=lambda x: engine.evaluate_card(x, self.b_hand + self.b_discard), reverse=True)
         elif player == 'b':
-            eligible_cards = sorted(self.b_discard + list(filter(lambda x: x.suit != 'D', cards)), key=lambda x: engine.evaluate_card(x, self.a_hand + self.a_discard))
+            eligible_cards = sorted(self.b_discard + list(filter(lambda x: x.suit != 'D', cards)), key=lambda x: engine.evaluate_card(x, self.a_hand + self.a_discard), reverse=True)
 
-        nonsalt_eligible_cards = [c for c in eligible_cards if c.suit != 'D']
-        if len(nonsalt_eligible_cards) > 0:
-            r_card = nonsalt_eligible_cards[-1]
-        elif len(eligible_cards) > 0:
-            r_card = eligible_cards[-1]
-        
+        r_cards = eligible_cards[:3]
         if self.cpu_output:
-            if r_card is not None:
-                print('Recycling card {}'.format(r_card.to_string()))
-            else:
-                print('Recycling card None')
-        return r_card
+            print('Recycling cards {}'.format(r_cards))
+        return r_cards
 
     def cmp_moves(self, a_cards, b_cards):
         if len(a_cards) == 0 and len(b_cards) == 0:
@@ -152,29 +144,27 @@ class Board:
 
         # Salt
         if salt_result == 'a':
-            for i in range(3):
-                if self.a_human:
-                    recycle_card = self.get_human_recycle_card('a', a_cards)
-                else:
-                    recycle_card = self.get_cpu_recycle_card('a', a_cards)
-                if recycle_card is not None:
-                    self.a_hand.append(recycle_card)
-                    if recycle_card in self.a_discard:
-                        self.a_discard.remove(recycle_card)
-                    elif recycle_card in a_cards:
-                        a_cards.remove(recycle_card)
+            if self.a_human:
+                recycle_cards = self.get_human_recycle_cards('a', a_cards)
+            else:
+                recycle_cards = self.get_cpu_recycle_cards('a', a_cards)
+            for recycle_card in recycle_cards:
+                self.a_hand.append(recycle_card)
+                if recycle_card in self.a_discard:
+                    self.a_discard.remove(recycle_card)
+                elif recycle_card in a_cards:
+                    a_cards.remove(recycle_card)
         elif salt_result == 'b':
-            for i in range(3):
-                if self.b_human:
-                    recycle_card = self.get_human_recycle_card('b', b_cards)
-                else:
-                    recycle_card = self.get_cpu_recycle_card('b', b_cards)
-                if recycle_card is not None:
-                    self.b_hand.append(recycle_card)
-                    if recycle_card in self.b_discard:
-                        self.b_discard.remove(recycle_card)
-                    elif recycle_card in b_cards:
-                        b_cards.remove(recycle_card)
+            if self.b_human:
+                recycle_cards = self.get_human_recycle_cards('b', b_cards)
+            else:
+                recycle_cards = self.get_cpu_recycle_cards('b', b_cards)
+            for recycle_card in recycle_cards:
+                self.b_hand.append(recycle_card)
+                if recycle_card in self.b_discard:
+                    self.b_discard.remove(recycle_card)
+                elif recycle_card in b_cards:
+                    b_cards.remove(recycle_card)
 
         # Slap
         if slap_result == 'a':
