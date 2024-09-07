@@ -152,7 +152,7 @@ class Board:
 
         # Salt
         if salt_result == 'a':
-            for i in range(2):
+            for i in range(3):
                 if self.a_human:
                     recycle_card = self.get_human_recycle_card('a', a_cards)
                 else:
@@ -164,7 +164,7 @@ class Board:
                     elif recycle_card in a_cards:
                         a_cards.remove(recycle_card)
         elif salt_result == 'b':
-            for i in range(2):
+            for i in range(3):
                 if self.b_human:
                     recycle_card = self.get_human_recycle_card('b', b_cards)
                 else:
