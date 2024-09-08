@@ -30,6 +30,8 @@ class Board:
 
         self.a_win = False
         self.b_win = False
+        self.push_win = False
+        self.throw_win = False
 
         self.a_human = a_human
         self.b_human = b_human
@@ -129,18 +131,22 @@ class Board:
         # Throw
         if throw_result == 'a' and push_result == 'b' and sum(map(lambda x: x.value, a_throw)) >= sum(map(lambda x: x.value, b_push)):
             self.a_win = True
+            self.throw_win = True
         elif throw_result == 'b' and push_result == 'a' and sum(map(lambda x: x.value, b_throw)) >= sum(map(lambda x: x.value, a_push)):
             self.b_win = True
+            self.throw_win = True
 
         # Push
         if push_result == 'a':
             self.position += 1
             if self.position >= 5 and self.b_win == False:
                 self.a_win = True
+                self.push_win = True
         elif push_result == 'b':
             self.position -= 1
             if self.position < 0 and self.a_win == False:
                 self.b_win = True
+                self.push_win = True
 
         # Salt
         if salt_result == 'a':

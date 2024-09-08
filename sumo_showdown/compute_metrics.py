@@ -64,6 +64,8 @@ for c in list(card_deck.keys()):
 
 # Play this many games
 draws = 0
+push_wins = 0
+throw_wins = 0
 sumo_sizes = {}
 for i in range(GAME_COUNT):
     a_sumo, b_sumo = generate_sumos(card_deck)
@@ -80,6 +82,11 @@ for i in range(GAME_COUNT):
         sumo_sizes[len(a_sumo)] = [0,0,0]
     if len(b_sumo) not in sumo_sizes:
         sumo_sizes[len(b_sumo)] = [0,0,0]
+
+    if board.push_win:
+        push_wins += 1
+    elif board.throw_win:
+        throw_wins += 1
 
     if board.a_win:
         print('Game {} ended. Player A wins!'.format(i))
@@ -117,4 +124,6 @@ for s in ['C', 'D', 'H', 'S']:
 for s in sorted(list(sumo_sizes.items()), key=lambda x: x[0]):
     print('Sumo Size {}: {} W, {} L, {} D, {} Total, {} Percentage'.format(s[0], s[1][0], s[1][1], s[1][2], s[1][0] + s[1][1] + s[1][2], round(100 * (s[1][0] + 0.5 * s[1][2])/(s[1][0] + s[1][1] + s[1][2]), 2)))
 
+print('Push win percentage: {}%'.format(round(push_wins * 100 / GAME_COUNT, 2)))
+print('Throw win percentage: {}%'.format(round(throw_wins * 100 / GAME_COUNT, 2)))
 print('Draw percentage: {}%'.format(round(draws * 100 / GAME_COUNT, 2)))
