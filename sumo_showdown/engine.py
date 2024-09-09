@@ -98,9 +98,27 @@ def calculate_equilibrium(board):
     a_weights = [10]*len(a_moves)
     b_weights = [10]*len(b_moves)
 
+    # Add logic to never consider illogical moves such as playing a Push and Throw with the Push > Throw
+    a_illogical_moves_idx = []
+    b_illogical_moves_idx = []
+    for i in range(len(a_moves)):
+        move = a_moves[i]
+        if len(move) == 2 and ((move[0].suit == 'S' and move[1].suit == 'C' and move[0].value < move[1].value) or (move[0].suit == 'C' and move[1].suit == 'S' and move[1].value < move[0].value)):
+            a_illogical_moves_idx.append(i)
+            a_weights[i] = 0
+    for i in range(len(b_moves)):
+        move = b_moves[i]
+        if len(move) == 2 and ((move[0].suit == 'S' and move[1].suit == 'C' and move[0].value < move[1].value) or (move[0].suit == 'C' and move[1].suit == 'S' and move[1].value < move[0].value)):
+            b_illogical_moves_idx.append(i)
+            b_weights[i] = 0
+
+
     outcome = calculate_outcome(table, a_weights, b_weights)
     for _ in range(256):
         for a in range(len(a_weights)):
+            if a in a_illogical_moves_idx:
+                continue
+
             a_weight_orig = a_weights[a]
             
             # Try increase and decrease
@@ -109,11 +127,6 @@ def calculate_equilibrium(board):
                     continue
                 a_weights[a] = a_weight_orig + i
                 new_outcome = calculate_outcome(table, a_weights, b_weights)
-
-                # Delete after debug
-                a_sum = sum(a_weights)
-                b_sum = sum(b_weights)
-                strategy_outcome = sum([table[a][b] * a_weights[a] * b_weights[b] / (a_sum * b_sum) for b in range(len(b_weights))])
                 if new_outcome > outcome:
                     outcome = new_outcome
                     break
@@ -121,6 +134,9 @@ def calculate_equilibrium(board):
                     a_weights[a] = a_weight_orig
                 
         for b in range(len(b_weights)):
+            if b in b_illogical_moves_idx:
+                continue
+
             b_weight_orig = b_weights[b]
             
             # Try increase and decrease
