@@ -44,11 +44,11 @@ class Board:
     def get_human_discards(self, player):
         discards = []
         if player == 'a':
-            while len(discards) < min(4, len(self.a_hand)) and all(map(lambda x: x in a_hand, discards)):
+            while len(discards) < min(4, len(self.a_hand)) and all(map(lambda x: x in self.a_hand, discards)):
                 response = input('Your hand: {}\nEnter the 4 cards to discard from your hand in csv format: '.format(self.a_hand))
                 discards = [card.Card(s.strip()) for s in response.split(',')]
         elif player == 'b':
-            while len(discards) < min(4, len(self.b_hand)) and all(map(lambda x: x in b_hand, discards)):
+            while len(discards) < min(4, len(self.b_hand)) and all(map(lambda x: x in self.b_hand, discards)):
                 response = input('Your hand: {}\nEnter the 4 cards to discard from your hand in csv format: '.format(self.b_hand))
                 discards = [card.Card(s.strip()) for s in response.split(',')]
         return discards
