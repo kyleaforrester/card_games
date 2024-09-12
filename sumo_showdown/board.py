@@ -71,7 +71,7 @@ class Board:
         elif player == 'b':
             eligible_cards = self.b_discard + list(filter(lambda x: x.suit != 'D', cards))
 
-        while len(eligible_cards) > 0 and (len(r_cards) == 0 or any(map(lambda x: x not in [str(c) for c in eligible_cards], r_cards))):
+        while len(eligible_cards) > 0 and not (len(r_cards) > 0 and len(r_cards) <= 3 and all(map(lambda x: x in [str(c) for c in eligible_cards], r_cards))):
             r_cards = input('Your eligible recycling cards: {}\nEnter what cards you wish to recycle in csv format: '.format(eligible_cards))
             r_cards = [s.strip() for s in r_cards.split(',')]
         return [card.Card(c) for c in r_cards]
@@ -142,7 +142,7 @@ class Board:
         # Push
         if push_result == 'a':
             self.position += 1
-            if self.position >= 5 and self.b_win == False:
+            if self.position >= 3 and self.b_win == False:
                 self.a_win = True
                 self.push_win = True
         elif push_result == 'b':

@@ -74,7 +74,7 @@ for i in range(GAME_COUNT):
     b_hand = list(map(lambda x: str(x), b_sumo))
 
     print('Starting game {}: {} vs {}'.format(i, a_hand, b_hand))
-    board = Board(a_hand, [], 0, 0, b_hand, [], 0, 0, 2, False)
+    board = Board(a_hand, [], 0, 0, b_hand, [], 0, 0, 1, False)
     play_game(board)
 
     # Initialize W,L,D for each sized sumo if not already present

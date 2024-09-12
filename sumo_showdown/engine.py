@@ -58,17 +58,17 @@ def evaluate_board(board):
 
     # Each Rest is considered equal to a Push
     # Calculate how far each player has depleted their hand and needs Rests
-    # Add the needed Rests onto the push position. Since max range of 2 Rests and the position is initially between [0, 4], after adding the Rest the position becomes [-2, 6]
-    # Take a linear value between [-2, 6] to squash the result between 0 and 1
+    # Add the needed Rests onto the push position. Since max range of 2 Rests and the position is initially between [0, 2], after adding the Rest the position becomes [-2, 4]
+    # Take a linear value between [-2, 4] to squash the result between 0 and 1
 
     # Take the average of value and count to determine the percentage of depletion. Mutiply by the remaining rests required
     a_needed_rests = ((a_value_spent + a_count_spent) / 2) * (2 - board.a_rests)
     b_needed_rests = ((b_value_spent + b_count_spent) / 2) * (2 - board.b_rests)
     
-    # new_position will be a value between [-2, 6]
+    # new_position will be a value between [-2, 4]
     new_position = board.position - a_needed_rests + b_needed_rests
 
-    return (new_position + 2) / 8
+    return (new_position + 2) / 6
 
 def calculate_outcome(table, a_weights, b_weights):
     a_sum = sum(a_weights)
