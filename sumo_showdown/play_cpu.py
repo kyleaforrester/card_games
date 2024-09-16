@@ -59,11 +59,15 @@ while not board.a_win and not board.b_win:
             if action == 'board':
                 print(board)
             elif action == 'play':
-                move_cards = [card.Card(s.strip()) for s in ''.join(response.split()[1:]).split(',')]
-                cpu_cards = random.choices(b_moves, weights=b_weights, k=1)[0]
-                print('Player B plays {}'.format(cpu_cards))
-                board.resolve_moves(move_cards, cpu_cards)
-                print(board)
+                move_card_strs = [s.strip() for s in ''.join(response.split()[1:]).split(',')]
+                if all(map(lambda x: x in [str(c) for c in board.a_hand], move_card_strs)):
+                    move_cards = [card.Card(s) for s in move_card_strs]
+                    cpu_cards = random.choices(b_moves, weights=b_weights, k=1)[0]
+                    print('Player B plays {}'.format(cpu_cards))
+                    board.resolve_moves(move_cards, cpu_cards)
+                    print(board)
+                else:
+                    print('Invalid input! Cards not found in hand: {}'.format(list(filter(lambda x: x not in [str(c) for c in board.a_hand], move_card_strs))))
             elif action == 'rest':
                 cpu_cards = random.choices(b_moves, weights=b_weights, k=1)[0]
                 print('Player B plays {}'.format(cpu_cards))
