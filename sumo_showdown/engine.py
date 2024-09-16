@@ -51,10 +51,8 @@ def evaluate_board(board):
             b_discard_value += value
 
     a_value_spent = a_discard_value / (a_hand_value + a_discard_value)
-    a_count_spent = len(board.a_discard) / (len(board.a_hand) + len(board.a_discard))
 
     b_value_spent = b_discard_value / (b_hand_value + b_discard_value)
-    b_count_spent = len(board.b_discard) / (len(board.b_hand) + len(board.b_discard))
 
     # Each Rest is considered equal to a Push
     # Calculate how far each player has depleted their hand and needs Rests
@@ -62,8 +60,8 @@ def evaluate_board(board):
     # Take a linear value between [-2, 4] to squash the result between 0 and 1
 
     # Take the average of value and count to determine the percentage of depletion. Mutiply by the remaining rests required
-    a_needed_rests = ((a_value_spent + a_count_spent) / 2) * (2 - board.a_rests)
-    b_needed_rests = ((b_value_spent + b_count_spent) / 2) * (2 - board.b_rests)
+    a_needed_rests = a_value_spent * (2 - board.a_rests)
+    b_needed_rests = b_value_spent * (2 - board.b_rests)
     
     # new_position will be a value between [-2, 4]
     new_position = board.position - a_needed_rests + b_needed_rests
@@ -113,8 +111,10 @@ def calculate_equilibrium(board):
             b_weights[i] = 0
 
 
-    outcome = calculate_outcome(table, a_weights, b_weights)
     for _ in range(256):
+        outcome = calculate_outcome(table, a_weights, b_weights)
+        new_a_weights = [a for a in a_weights]
+        new_b_weights = [b for b in b_weights]
         for a in range(len(a_weights)):
             if a in a_illogical_moves_idx:
                 continue
@@ -123,15 +123,15 @@ def calculate_equilibrium(board):
             
             # Try increase and decrease
             for i in [-1, 1]:
-                if i == -1 and (sum(a_weights) == 1 or a_weights[a] == 0):
+                if i == -1 and (sum(new_a_weights) == 1 or a_weights[a] == 0):
                     continue
                 a_weights[a] = a_weight_orig + i
                 new_outcome = calculate_outcome(table, a_weights, b_weights)
                 if new_outcome > outcome:
-                    outcome = new_outcome
-                    break
-                else:
+                    new_a_weights[a] = a_weights[a]
                     a_weights[a] = a_weight_orig
+                    break
+                a_weights[a] = a_weight_orig
                 
         for b in range(len(b_weights)):
             if b in b_illogical_moves_idx:
@@ -141,14 +141,17 @@ def calculate_equilibrium(board):
             
             # Try increase and decrease
             for i in [-1, 1]:
-                if i == -1 and (sum(b_weights) == 1 or b_weights[b] == 0):
+                if i == -1 and (sum(new_b_weights) == 1 or b_weights[b] == 0):
                     continue
                 b_weights[b] = b_weight_orig + i
                 new_outcome = calculate_outcome(table, a_weights, b_weights)
                 if new_outcome < outcome:
-                    outcome = new_outcome
-                    break
-                else:
+                    new_b_weights[b] = b_weights[b]
                     b_weights[b] = b_weight_orig
+                    break
+                b_weights[b] = b_weight_orig
+
+        a_weights = new_a_weights
+        b_weights = new_b_weights
 
     return (a_moves, a_weights, b_moves, b_weights)
