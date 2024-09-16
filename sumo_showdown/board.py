@@ -41,6 +41,8 @@ class Board:
 
         self.cpu_output = cpu_output
 
+        self.turns_played = 0
+
     def get_human_discards(self, player):
         discards = []
         if player == 'a':
@@ -197,6 +199,7 @@ class Board:
             self.a_discard.append(c)
         for c in b_cards:
             self.b_discard.append(c)
+        self.turns_played += 1
 
     def get_moves(self):
         # Returns a list with player A as the first element and player B as the second.

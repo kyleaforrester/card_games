@@ -7,7 +7,7 @@ import sys
 import json
 import random
 
-GAME_COUNT = 1000
+GAME_COUNT = 100
 
 def generate_sumos(card_deck):
     a_sumo = []
@@ -66,6 +66,7 @@ for c in list(card_deck.keys()):
 draws = 0
 push_wins = 0
 throw_wins = 0
+turns = 0
 sumo_sizes = {}
 for i in range(GAME_COUNT):
     a_sumo, b_sumo = generate_sumos(card_deck)
@@ -85,8 +86,10 @@ for i in range(GAME_COUNT):
 
     if board.push_win:
         push_wins += 1
+        turns += board.turns_played
     elif board.throw_win:
         throw_wins += 1
+        turns += board.turns_played
 
     if board.a_win:
         print('Game {} ended. Player A wins!'.format(i))
@@ -124,6 +127,7 @@ for s in ['C', 'D', 'H', 'S']:
 for s in sorted(list(sumo_sizes.items()), key=lambda x: x[0]):
     print('Sumo Size {}: {} W, {} L, {} D, {} Total, {} Percentage'.format(s[0], s[1][0], s[1][1], s[1][2], s[1][0] + s[1][1] + s[1][2], round(100 * (s[1][0] + 0.5 * s[1][2])/(s[1][0] + s[1][1] + s[1][2]), 2)))
 
+print('Avg turns played in winning games: {}'.format(turns / (push_wins + throw_wins)))
 print('Push win percentage: {}%'.format(round(push_wins * 100 / GAME_COUNT, 2)))
 print('Throw win percentage: {}%'.format(round(throw_wins * 100 / GAME_COUNT, 2)))
 print('Draw percentage: {}%'.format(round(draws * 100 / GAME_COUNT, 2)))
