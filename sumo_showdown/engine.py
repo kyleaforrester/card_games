@@ -123,7 +123,7 @@ def calculate_equilibrium(board):
             
             # Try increase and decrease
             for i in [-1, 1]:
-                if i == -1 and (sum(new_a_weights) == 1 or a_weights[a] == 0):
+                if i == -1 and (sum(new_a_weights) == 1 or sum(a_weights) == 1 or a_weights[a] == 0):
                     continue
                 a_weights[a] = a_weight_orig + i
                 new_outcome = calculate_outcome(table, a_weights, b_weights)
@@ -141,7 +141,7 @@ def calculate_equilibrium(board):
             
             # Try increase and decrease
             for i in [-1, 1]:
-                if i == -1 and (sum(new_b_weights) == 1 or b_weights[b] == 0):
+                if i == -1 and (sum(new_b_weights) == 1 or sum(b_weights) == 1 or b_weights[b] == 0):
                     continue
                 b_weights[b] = b_weight_orig + i
                 new_outcome = calculate_outcome(table, a_weights, b_weights)
