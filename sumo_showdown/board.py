@@ -46,14 +46,16 @@ class Board:
     def get_human_discards(self, player):
         discards = []
         if player == 'a':
-            while len(discards) < min(4, len(self.a_hand)) and all(map(lambda x: x in self.a_hand, discards)):
-                response = input('Your hand: {}\nEnter the 4 cards to discard from your hand in csv format: '.format(self.a_hand))
-                discards = [card.Card(s.strip()) for s in response.split(',')]
+            hand = self.a_hand
         elif player == 'b':
-            while len(discards) < min(4, len(self.b_hand)) and all(map(lambda x: x in self.b_hand, discards)):
-                response = input('Your hand: {}\nEnter the 4 cards to discard from your hand in csv format: '.format(self.b_hand))
-                discards = [card.Card(s.strip()) for s in response.split(',')]
-        return discards
+            hand = self.b_hand
+
+        if len(hand) <= 4:
+            return [c for c in hand]
+        while len(discards) != 4 or any(map(lambda x: x not in [str(c) for c in hand], discards)):
+            response = input('Your hand: {}\nEnter the 4 cards to discard from your hand in csv format: '.format(hand))
+            discards = [s.strip() for s in response.split(',')]
+        return [card.Card(c) for c in discards]
 
     def get_cpu_discards(self, player):
         discards = []
@@ -73,8 +75,11 @@ class Board:
         elif player == 'b':
             eligible_cards = self.b_discard + list(filter(lambda x: x.suit != 'D', cards))
 
-        while len(eligible_cards) > 0 and not (len(r_cards) > 0 and len(r_cards) <= 3 and all(map(lambda x: x in [str(c) for c in eligible_cards], r_cards))):
-            r_cards = input('Your eligible recycling cards: {}\nEnter what cards you wish to recycle in csv format: '.format(eligible_cards))
+        if len(eligible_cards) <= 3:
+            return eligible_cards
+
+        while not (len(r_cards) > 0 and len(r_cards) <= 3 and all(map(lambda x: x in [str(c) for c in eligible_cards], r_cards))):
+            r_cards = input('Your eligible recycling cards: {}\nEnter up to 3 cards you wish to recycle in csv format: '.format(eligible_cards))
             r_cards = [s.strip() for s in r_cards.split(',')]
         return [card.Card(c) for c in r_cards]
 
