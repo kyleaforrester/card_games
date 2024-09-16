@@ -67,6 +67,8 @@ draws = 0
 push_wins = 0
 throw_wins = 0
 turns = 0
+a_wins = 0
+b_wins = 0
 sumo_sizes = {}
 for i in range(GAME_COUNT):
     a_sumo, b_sumo = generate_sumos(card_deck)
@@ -99,6 +101,7 @@ for i in range(GAME_COUNT):
             card_scores[c][1] += 1
         sumo_sizes[len(a_sumo)][0] += 1
         sumo_sizes[len(b_sumo)][1] += 1
+        a_wins += 1
     elif board.b_win:
         print('Game {} ended. Player B wins!'.format(i))
         for c in a_sumo:
@@ -107,6 +110,7 @@ for i in range(GAME_COUNT):
             card_scores[c][0] += 1
         sumo_sizes[len(b_sumo)][0] += 1
         sumo_sizes[len(a_sumo)][1] += 1
+        b_wins += 1
     else:
         print('Game {} ended. Draw!'.format(i))
         draws += 1
@@ -127,7 +131,9 @@ for s in ['C', 'D', 'H', 'S']:
 for s in sorted(list(sumo_sizes.items()), key=lambda x: x[0]):
     print('Sumo Size {}: {} W, {} L, {} D, {} Total, {} Percentage'.format(s[0], s[1][0], s[1][1], s[1][2], s[1][0] + s[1][1] + s[1][2], round(100 * (s[1][0] + 0.5 * s[1][2])/(s[1][0] + s[1][1] + s[1][2]), 2)))
 
-print('Avg turns played in winning games: {}'.format(turns / (push_wins + throw_wins)))
+print('A Win Percentage: {}%'.format(round(a_wins * 100 / GAME_COUNT, 2)))
+print('B Win Percentage: {}%'.format(round(b_wins * 100 / GAME_COUNT, 2)))
+print('Avg turns played in winning games: {}'.format(round(turns / (push_wins + throw_wins), 2)))
 print('Push win percentage: {}%'.format(round(push_wins * 100 / GAME_COUNT, 2)))
 print('Throw win percentage: {}%'.format(round(throw_wins * 100 / GAME_COUNT, 2)))
 print('Draw percentage: {}%'.format(round(draws * 100 / GAME_COUNT, 2)))
