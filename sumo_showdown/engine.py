@@ -96,20 +96,29 @@ def calculate_equilibrium(board):
     a_weights = [10]*len(a_moves)
     b_weights = [10]*len(b_moves)
 
-    # Add logic to never consider illogical moves such as playing a Push and Throw with the Push > Throw
+    # Add logic to never consider illogical moves
     a_illogical_moves_idx = []
     b_illogical_moves_idx = []
-    for i in range(len(a_moves)):
-        move = a_moves[i]
-        if len(move) == 2 and ((move[0].suit == 'S' and move[1].suit == 'C' and move[0].value < move[1].value) or (move[0].suit == 'C' and move[1].suit == 'S' and move[1].value < move[0].value)):
-            a_illogical_moves_idx.append(i)
-            a_weights[i] = 0
-    for i in range(len(b_moves)):
-        move = b_moves[i]
-        if len(move) == 2 and ((move[0].suit == 'S' and move[1].suit == 'C' and move[0].value < move[1].value) or (move[0].suit == 'C' and move[1].suit == 'S' and move[1].value < move[0].value)):
-            b_illogical_moves_idx.append(i)
-            b_weights[i] = 0
-
+    a_smallest_push = None
+    b_smallest_push = None
+    a_pushes = [c for c in board.a_hand if c.suit == 'C']
+    b_pushes = [c for c in board.b_hand if c.suit == 'C']
+    if len(a_pushes) > 0:
+        a_smallest_push = min(a_pushes, key=lambda x: x.value).value
+    if len(b_pushes) > 0:
+        b_smallest_push = min(b_pushes, key=lambda x: x.value).value
+    # Illogical to play a useless Throw alongside another non-Throw card
+    # A useless Throw has no possible opponent Pushes to throw this turn
+    for a in range(len(a_moves)):
+        throw_cards = list(filter(lambda x: x.suit == 'S', a_moves[a]))
+        if len(a_moves[a]) == 2 and len(throw_cards) == 1 and b_smallest_push is not None and throw_cards[0].value < b_smallest_push:
+            a_illogical_moves_idx.append(a)
+            a_weights[a] = 0
+    for b in range(len(b_moves)):
+        throw_cards = list(filter(lambda x: x.suit == 'S', b_moves[b]))
+        if len(b_moves[b]) == 2 and len(throw_cards) == 1 and a_smallest_push is not None and throw_cards[0].value < a_smallest_push:
+            b_illogical_moves_idx.append(b)
+            b_weights[b] = 0
 
     for _ in range(256):
         outcome = calculate_outcome(table, a_weights, b_weights)

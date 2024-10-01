@@ -7,7 +7,7 @@ import sys
 import json
 import random
 
-GAME_COUNT = 100
+GAME_COUNT = 1000
 
 def generate_sumos(card_deck):
     a_sumo = []
