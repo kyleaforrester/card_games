@@ -10,8 +10,8 @@ def evaluate_card(card, enemy_cards):
     elif card.suit == 'S':
         enemy_cards_better = len(list(filter(lambda x: (x.suit == 'C' and x.value > card.value) or (x.suit == 'S' and x.value > card.value), enemy_cards)))
         enemy_cards_c_s = len(list(filter(lambda x: x.suit in ('C', 'S'), enemy_cards)))
-        # No floor, linear degrading
-        value = 1 - (enemy_cards_better / enemy_cards_c_s) if enemy_cards_c_s > 0 else 0
+        # Floor is the chance the opponent rests (1/3)
+        value = (1/3) + (2/3)*(1 - (enemy_cards_better / enemy_cards_c_s)) if enemy_cards_c_s > 0 else (1/3)
     elif card.suit == 'H':
         enemy_cards_better = len(list(filter(lambda x: x.suit == 'H' and x.value > card.value, enemy_cards)))
         # Floor is the chance the opponent does not rest (2/3) and plays no Slap (9/16), which makes the floor (1/3 + 3/8) = 17/24 and ceiling 1. Since Push is slightly stronger, make the ceiling 3/4. Exponential degrading
@@ -89,9 +89,19 @@ def calculate_equilibrium(board):
 
     for a in range(len(table)):
         for b in range(len(table[a])):
-            temp_board = copy.deepcopy(board)
-            temp_board.resolve_moves(a_moves[a], b_moves[b])
-            table[a][b] = evaluate_board(temp_board)
+            if any(map(lambda x: x.suit == 'H', a_moves[a] + b_moves[b])):
+                monte_sum = 0
+                monte_simulations = 20
+                for _ in range(monte_simulations):
+                    # Perform Monte Carlo simulation of what the result will be due to random Slap discards
+                    temp_board = copy.deepcopy(board)
+                    temp_board.resolve_moves(a_moves[a], b_moves[b])
+                    monte_sum += evaluate_board(temp_board)
+                table[a][b] = monte_sum / monte_simulations
+            else:
+                temp_board = copy.deepcopy(board)
+                temp_board.resolve_moves(a_moves[a], b_moves[b])
+                table[a][b] = evaluate_board(temp_board)
 
     a_weights = [10]*len(a_moves)
     b_weights = [10]*len(b_moves)
@@ -99,27 +109,8 @@ def calculate_equilibrium(board):
     # Add logic to never consider illogical moves
     a_illogical_moves_idx = []
     b_illogical_moves_idx = []
-    a_smallest_push = None
-    b_smallest_push = None
-    a_pushes = [c for c in board.a_hand if c.suit == 'C']
-    b_pushes = [c for c in board.b_hand if c.suit == 'C']
-    if len(a_pushes) > 0:
-        a_smallest_push = min(a_pushes, key=lambda x: x.value).value
-    if len(b_pushes) > 0:
-        b_smallest_push = min(b_pushes, key=lambda x: x.value).value
-    # Illogical to play a useless Throw alongside another non-Throw card
-    # A useless Throw has no possible opponent Pushes to throw this turn
-    for a in range(len(a_moves)):
-        throw_cards = list(filter(lambda x: x.suit == 'S', a_moves[a]))
-        if len(a_moves[a]) == 2 and len(throw_cards) == 1 and b_smallest_push is not None and throw_cards[0].value < b_smallest_push:
-            a_illogical_moves_idx.append(a)
-            a_weights[a] = 0
-    for b in range(len(b_moves)):
-        throw_cards = list(filter(lambda x: x.suit == 'S', b_moves[b]))
-        if len(b_moves[b]) == 2 and len(throw_cards) == 1 and a_smallest_push is not None and throw_cards[0].value < a_smallest_push:
-            b_illogical_moves_idx.append(b)
-            b_weights[b] = 0
 
+    # Iterate to find approximate Nash equilibriums
     for _ in range(256):
         outcome = calculate_outcome(table, a_weights, b_weights)
         new_a_weights = [a for a in a_weights]

@@ -1,5 +1,6 @@
 import card
 import engine
+import random
 
 class Board:
     def __init__(self, a_hand, a_discard, a_rests, a_human, b_hand, b_discard, b_rests, b_human, position, cpu_output):
@@ -68,6 +69,17 @@ class Board:
             print('Discarding {}'.format(','.join([c.to_string() for c in discards])))
         return discards
 
+    def get_random_discards(self, player):
+        discards = []
+        if player == 'a':
+            discards = random.sample(self.a_hand, min(len(self.a_hand), 3))
+        elif player == 'b':
+            discards = random.sample(self.b_hand, min(len(self.b_hand), 3))
+
+        if self.cpu_output:
+            print('Discarding {}'.format(','.join([c.to_string() for c in discards])))
+        return discards
+
     def get_human_recycle_cards(self, player, cards):
         r_cards = []
         if player == 'a':
@@ -110,20 +122,6 @@ class Board:
         for c in b_cards:
             self.b_hand.remove(c)
 
-        # Rest
-        if len(a_cards) == 0:
-            self.a_rests += 1
-            if self.a_rests >= 2:
-                self.a_rests = 0
-                self.a_hand += self.a_discard
-                self.a_discard = []
-        if len(b_cards) == 0:
-            self.b_rests += 1
-            if self.b_rests >= 2:
-                self.b_rests = 0
-                self.b_hand += self.b_discard
-                self.b_discard = []
-
         a_throw = list(filter(lambda x: x.suit == 'S', a_cards))
         b_throw = list(filter(lambda x: x.suit == 'S', b_cards))
         a_push = list(filter(lambda x: x.suit == 'C', a_cards))
@@ -132,6 +130,20 @@ class Board:
         b_salt = list(filter(lambda x: x.suit == 'D', b_cards))
         a_slap = list(filter(lambda x: x.suit == 'H', a_cards))
         b_slap = list(filter(lambda x: x.suit == 'H', b_cards))
+
+        # Rest
+        if len(a_cards) == 0 and len(b_throw) == 0:
+            self.a_rests += 1
+            if self.a_rests >= 2:
+                self.a_rests = 0
+                self.a_hand += self.a_discard
+                self.a_discard = []
+        if len(b_cards) == 0 and len(a_throw) == 0:
+            self.b_rests += 1
+            if self.b_rests >= 2:
+                self.b_rests = 0
+                self.b_hand += self.b_discard
+                self.b_discard = []
 
         throw_result = self.cmp_moves(a_throw, b_throw)
         push_result = self.cmp_moves(a_push, b_push)
@@ -185,17 +197,17 @@ class Board:
         # Slap
         if slap_result == 'a':
             if self.b_human:
-                discards = self.get_human_discards('b')
+                discards = self.get_random_discards('b')
             else:
-                discards = self.get_cpu_discards('b')
+                discards = self.get_random_discards('b')
             for c in discards:
                 self.b_hand.remove(c)
                 self.b_discard.append(c)
         elif slap_result == 'b':
             if self.a_human:
-                discards = self.get_human_discards('a')
+                discards = self.get_random_discards('a')
             else:
-                discards = self.get_cpu_discards('a')
+                discards = self.get_random_discards('a')
             for c in discards:
                 self.a_hand.remove(c)
                 self.a_discard.append(c)
