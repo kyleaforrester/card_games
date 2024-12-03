@@ -9,9 +9,8 @@ def evaluate_card(card, enemy_cards):
         value = ((1 / (2**enemy_cards_better)) * 1/2) + (1/2)
     elif card.suit == 'S':
         enemy_cards_better = len(list(filter(lambda x: (x.suit == 'C' and x.value > card.value) or (x.suit == 'S' and x.value > card.value), enemy_cards)))
-        enemy_cards_c_s = len(list(filter(lambda x: x.suit in ('C', 'S'), enemy_cards)))
-        # Floor is the chance the opponent rests (1/3)
-        value = (1/3) + (2/3)*(1 - (enemy_cards_better / enemy_cards_c_s)) if enemy_cards_c_s > 0 else (1/3)
+        # Floor is the chance the opponent rests (1/3). Negating a Rest is the same as negating a 1.5 card play by the opponent, so the Floor is 1.5*(1/3) = 1/2. Exponential degrading
+        value = ((1 / (2**enemy_cards_better)) * 1/2) + (1/2)
     elif card.suit == 'H':
         enemy_cards_better = len(list(filter(lambda x: x.suit == 'H' and x.value > card.value, enemy_cards)))
         # Floor is the chance the opponent does not rest (2/3) and plays no Slap (9/16), which makes the floor (1/3 + 3/8) = 17/24 and ceiling 1. Since Push is slightly stronger, make the ceiling 3/4. Exponential degrading
@@ -54,19 +53,19 @@ def evaluate_board(board):
 
     b_value_spent = b_discard_value / (b_hand_value + b_discard_value)
 
-    # Each Rest is considered equal to a Push
+    # Each Rest is considered equal to 1.5 Pushes
     # Calculate how far each player has depleted their hand and needs Rests
-    # Add the needed Rests onto the push position. Since max range of 2 Rests and the position is initially between [0, 2], after adding the Rest the position becomes [-2, 4]
-    # Take a linear value between [-2, 4] to squash the result between 0 and 1
+    # Add the needed Rests onto the push position. Since max range of 2 Rests and the position is initially between [0, 2], after adding the Rest the position becomes [-3, 5]
+    # Take a linear value between [-3, 5] to squash the result between 0 and 1
 
     # Take the average of value and count to determine the percentage of depletion. Mutiply by the remaining rests required
     a_needed_rests = a_value_spent * (2 - board.a_rests)
     b_needed_rests = b_value_spent * (2 - board.b_rests)
     
-    # new_position will be a value between [-2, 4]
-    new_position = board.position - a_needed_rests + b_needed_rests
+    # new_position will be a value between [-3, 5]
+    new_position = board.position - (3/2)*a_needed_rests + (3/2)*b_needed_rests
 
-    return (new_position + 2) / 6
+    return (new_position + 3) / 8
 
 def calculate_outcome(table, a_weights, b_weights):
     a_sum = sum(a_weights)

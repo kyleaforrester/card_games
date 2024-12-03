@@ -97,9 +97,9 @@ class Board:
 
     def get_cpu_recycle_cards(self, player, cards):
         if player == 'a':
-            eligible_cards = sorted(self.a_discard + list(filter(lambda x: x.suit != 'D', cards)), key=lambda x: engine.evaluate_card(x, self.b_sumo), reverse=True)
+            eligible_cards = sorted(self.a_discard + list(filter(lambda x: x.suit != 'D', cards)), key=lambda x: (engine.evaluate_card(x, self.b_sumo), len([c for c in self.a_hand if c.suit != x.suit]), x.value), reverse=True)
         elif player == 'b':
-            eligible_cards = sorted(self.b_discard + list(filter(lambda x: x.suit != 'D', cards)), key=lambda x: engine.evaluate_card(x, self.a_sumo), reverse=True)
+            eligible_cards = sorted(self.b_discard + list(filter(lambda x: x.suit != 'D', cards)), key=lambda x: (engine.evaluate_card(x, self.a_sumo), len([c for c in self.b_hand if c.suit != x.suit]), x.value), reverse=True)
 
         r_cards = eligible_cards[:3]
         if self.cpu_output:

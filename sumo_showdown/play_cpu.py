@@ -48,6 +48,7 @@ while not board.a_win and not board.b_win:
     a_moves, a_weights, b_moves, b_weights = engine.calculate_equilibrium(board)
     board.a_human = a_human
     board.cpu_output = True
+    print(board)
 
     if board.a_human:
         response = ''
@@ -65,18 +66,15 @@ while not board.a_win and not board.b_win:
                     cpu_cards = random.choices(b_moves, weights=b_weights, k=1)[0]
                     print('Player B plays {}'.format(cpu_cards))
                     board.resolve_moves(move_cards, cpu_cards)
-                    print(board)
                 else:
                     print('Invalid input! Cards not found in hand: {}'.format(list(filter(lambda x: x not in [str(c) for c in board.a_hand], move_card_strs))))
             elif action == 'rest':
                 cpu_cards = random.choices(b_moves, weights=b_weights, k=1)[0]
                 print('Player B plays {}'.format(cpu_cards))
                 board.resolve_moves([], cpu_cards)
-                print(board)
             else:
                 print('Not a valid command: {}'.format(response))
     else:
-        print(board)
         a_move = random.choices(a_moves, weights=a_weights, k=1)[0]
         b_move = random.choices(b_moves, weights=b_weights, k=1)[0]
         print('Player A plays {}'.format(a_move))
