@@ -7,12 +7,12 @@ import sys
 import json
 import random
 
-GAME_COUNT = 100
+GAME_COUNT = 1000
 
 def generate_sumos(card_deck):
     a_sumo = []
     b_sumo = []
-    while not any(map(lambda x: x.suit == 'C', a_sumo)) or not any(map(lambda x: x.suit == 'C', b_sumo)):
+    while not any(map(lambda x: x.suit == 'C' or x.suit == 'S', a_sumo)) or not any(map(lambda x: x.suit == 'C' or x.suit == 'S', b_sumo)):
         deck = list(card_deck.keys())
         random.shuffle(deck)
         deck = sorted(deck, key=lambda x: card_deck[x])

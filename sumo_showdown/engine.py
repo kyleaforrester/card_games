@@ -53,6 +53,11 @@ def evaluate_board(board):
 
     b_value_spent = b_discard_value / (b_hand_value + b_discard_value)
 
+    # New evaluation below.  Set the hand exhaustion to be as important as the push counter
+    # Normalize [-2, 4] between [0, 1]
+    new_position = board.position - 2*a_value_spent + 2*b_value_spent
+    return (new_position + 2) / 6
+
     # Each Rest is considered equal to 1.5 Pushes
     # Calculate how far each player has depleted their hand and needs Rests
     # Add the needed Rests onto the push position. Since max range of 2 Rests and the position is initially between [0, 2], after adding the Rest the position becomes [-3, 5]

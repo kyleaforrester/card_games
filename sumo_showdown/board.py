@@ -51,19 +51,19 @@ class Board:
         elif player == 'b':
             hand = self.b_hand
 
-        if len(hand) <= 4:
+        if len(hand) <= 3:
             return [c for c in hand]
-        while len(discards) != 4 or any(map(lambda x: x not in [str(c) for c in hand], discards)):
-            response = input('Your hand: {}\nEnter the 4 cards to discard from your hand in csv format: '.format(hand))
+        while len(discards) != 3 or any(map(lambda x: x not in [str(c) for c in hand], discards)):
+            response = input('Your hand: {}\nEnter the 3 cards to discard from your hand in csv format: '.format(hand))
             discards = [s.strip() for s in response.split(',')]
         return [card.Card(c) for c in discards]
 
     def get_cpu_discards(self, player):
         discards = []
         if player == 'a':
-            discards = sorted(self.a_hand, key=lambda x: engine.evaluate_card(x, self.b_sumo))[:4]
+            discards = sorted(self.a_hand, key=lambda x: engine.evaluate_card(x, self.b_sumo))[:3]
         elif player == 'b':
-            discards = sorted(self.b_hand, key=lambda x: engine.evaluate_card(x, self.a_sumo))[:4]
+            discards = sorted(self.b_hand, key=lambda x: engine.evaluate_card(x, self.a_sumo))[:3]
 
         if self.cpu_output:
             print('Discarding {}'.format(','.join([c.to_string() for c in discards])))
@@ -87,11 +87,14 @@ class Board:
         elif player == 'b':
             eligible_cards = self.b_discard + list(filter(lambda x: x.suit != 'D', cards))
 
-        if len(eligible_cards) <= 3:
+        r_card_count = 4
+        if len(cards) == 0:
+            r_card_count = 4
+        if len(eligible_cards) <= r_card_count:
             return eligible_cards
 
-        while not (len(r_cards) > 0 and len(r_cards) <= 3 and all(map(lambda x: x in [str(c) for c in eligible_cards], r_cards))):
-            r_cards = input('Your eligible recycling cards: {}\nEnter up to 3 cards you wish to recycle in csv format: '.format(eligible_cards))
+        while not (len(r_cards) > 0 and len(r_cards) <= r_card_count and all(map(lambda x: x in [str(c) for c in eligible_cards], r_cards))):
+            r_cards = input('Your eligible recycling cards: {}\nEnter up to {} cards you wish to recycle in csv format: '.format(eligible_cards, r_card_count))
             r_cards = [s.strip() for s in r_cards.split(',')]
         return [card.Card(c) for c in r_cards]
 
@@ -101,7 +104,10 @@ class Board:
         elif player == 'b':
             eligible_cards = sorted(self.b_discard + list(filter(lambda x: x.suit != 'D', cards)), key=lambda x: (engine.evaluate_card(x, self.a_sumo), len([c for c in self.b_hand if c.suit != x.suit]), x.value), reverse=True)
 
-        r_cards = eligible_cards[:3]
+        r_card_count = 4
+        if len(cards) == 0:
+            r_card_count = 4
+        r_cards = eligible_cards[:r_card_count]
         if self.cpu_output:
             print('Recycling cards {}'.format(r_cards))
         return r_cards
@@ -133,17 +139,21 @@ class Board:
 
         # Rest
         if len(a_cards) == 0 and len(b_throw) == 0:
-            self.a_rests += 1
-            if self.a_rests >= 2:
-                self.a_rests = 0
-                self.a_hand += self.a_discard
-                self.a_discard = []
+            if self.a_human:
+                recycle_cards = self.get_human_recycle_cards('a', [])
+            else:
+                recycle_cards = self.get_cpu_recycle_cards('a', [])
+            for recycle_card in recycle_cards:
+                self.a_hand.append(recycle_card)
+                self.a_discard.remove(recycle_card)
         if len(b_cards) == 0 and len(a_throw) == 0:
-            self.b_rests += 1
-            if self.b_rests >= 2:
-                self.b_rests = 0
-                self.b_hand += self.b_discard
-                self.b_discard = []
+            if self.b_human:
+                recycle_cards = self.get_human_recycle_cards('b', [])
+            else:
+                recycle_cards = self.get_cpu_recycle_cards('b', [])
+            for recycle_card in recycle_cards:
+                self.b_hand.append(recycle_card)
+                self.b_discard.remove(recycle_card)
 
         throw_result = self.cmp_moves(a_throw, b_throw)
         push_result = self.cmp_moves(a_push, b_push)
@@ -151,10 +161,10 @@ class Board:
         slap_result = self.cmp_moves(a_slap, b_slap)
 
         # Throw
-        if throw_result == 'a' and len(b_push) > 0 and sum(map(lambda x: x.value, a_throw)) >= sum(map(lambda x: x.value, b_push)):
+        if throw_result == 'a' and (len(b_push) > 0 and sum(map(lambda x: x.value, a_throw)) >= sum(map(lambda x: x.value, b_push)) or len(b_cards) == 0):
             self.a_win = True
             self.throw_win = True
-        elif throw_result == 'b' and len(a_push) > 0 and sum(map(lambda x: x.value, b_throw)) >= sum(map(lambda x: x.value, a_push)):
+        elif throw_result == 'b' and (len(a_push) > 0 and sum(map(lambda x: x.value, b_throw)) >= sum(map(lambda x: x.value, a_push)) or len(a_cards) == 0):
             self.b_win = True
             self.throw_win = True
 
