@@ -29,18 +29,16 @@ position = read_file_to_json(sys.argv[1])
 
 a_hand = position['Player_A']['Hand']
 a_discard = position['Player_A']['Discard']
-a_rests = position['Player_A']['Rests']
 a_human = position['Player_A']['Human']
 b_hand = position['Player_B']['Hand']
 b_discard = position['Player_B']['Discard']
-b_rests = position['Player_B']['Rests']
 b_human = position['Player_B']['Human']
 position = position['Position']
 
-board = board.Board(a_hand, a_discard, a_rests, a_human, b_hand, b_discard, b_rests, b_human, position, True)
+board = board.Board(a_hand, a_discard, a_human, b_hand, b_discard, b_human, position, True)
 
-print(sorted([(c, engine.evaluate_card(c, board.b_hand)) for c in board.a_hand], key=lambda x: x[1]))
-print(sorted([(c, engine.evaluate_card(c, board.a_hand)) for c in board.b_hand], key=lambda x: x[1]))
+#print(sorted([(c, engine.evaluate_card(c, board.b_hand)) for c in board.a_hand], key=lambda x: x[1]))
+#print(sorted([(c, engine.evaluate_card(c, board.a_hand)) for c in board.b_hand], key=lambda x: x[1]))
 
 while not board.a_win and not board.b_win:
     board.a_human = False
@@ -55,7 +53,7 @@ while not board.a_win and not board.b_win:
         action = ''
         valid_actions = ('board', 'play', 'rest')
         while action not in valid_actions:
-            response = input('Valid commands: board, play, rest.\nExamples:\nboard\nplay AH,KS\nplay 5C\nrest\nWhat would you like to do? ')
+            response = input('Valid commands: board, play, rest.\nExamples:\nboard\nplay AH,KS\nrest\nWhat would you like to do? ')
             action = response.split()[0]
             if action == 'board':
                 print(board)

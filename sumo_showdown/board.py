@@ -3,14 +3,12 @@ import engine
 import random
 
 class Board:
-    def __init__(self, a_hand, a_discard, a_rests, a_human, b_hand, b_discard, b_rests, b_human, position, cpu_output):
+    def __init__(self, a_hand, a_discard, a_human, b_hand, b_discard, b_human, position, cpu_output):
         # For players a and b
         # self.a_hand
         # self.a_discard
-        # self.a_rests
         # self.b_hand
         # self.b_discard
-        # self.b_rests
         # self.position
         # self.a_human
         # self.b_human
@@ -26,9 +24,6 @@ class Board:
 
         self.a_sumo = self.a_hand + self.a_discard
         self.b_sumo = self.b_hand + self.b_discard
-
-        self.a_rests = a_rests
-        self.b_rests = b_rests
 
         self.position = position
 
@@ -246,13 +241,10 @@ class Board:
         return player_moves
 
     def __str__(self):
-        string = 'Player A win? {} Player B win? {}\n'.format(self.a_win, self.b_win)
-        string += 'Player A Hand: {}\n'.format(sorted(self.a_hand, key=lambda x: (x.suit, x.value)))
+        string = 'Player A Hand: {}\n'.format(sorted(self.a_hand, key=lambda x: (x.suit, x.value)))
         string += 'Player A Discard: {}\n'.format(self.a_discard)
-        string += 'Player A Rests: {}\n'.format(self.a_rests)
         string += 'Player B Hand: {}\n'.format(sorted(self.b_hand, key=lambda x: (x.suit, x.value)))
         string += 'Player B Discard: {}\n'.format(self.b_discard)
-        string += 'Player B Rests: {}\n'.format(self.b_rests)
         string += 'Position: {}'.format(self.position)
         return string
 

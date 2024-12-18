@@ -1,14 +1,12 @@
 {
   "Player_A": {
-    "Hand": ["QD", "QS", "5D", "8H", "4S", "4C", "3D", "2C"],
+    "Hand": ["10D", "8C", "7C", "6H", "7D", "5H", "6S", "AD"],
     "Discard": [],
-    "Rests": 0,
     "Human": 1
   },
   "Player_B": {
-    "Hand":  ["9D", "9C", "JH", "8S", "9S", "AC", "3H"],
+    "Hand":  ["KH", "6C", "4S", "JD", "4C", "9D", "2H", "AC"],
     "Discard": [],
-    "Rests": 0,
     "Human": 0
   },
   "Position": 1
