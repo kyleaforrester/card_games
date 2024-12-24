@@ -28,6 +28,46 @@ def evaluate_board(board):
     elif board.b_win:
         return 0
 
+    # If about to be Thrown
+    if len(board.a_hand) == 0 and any(map(lambda x: x.suit == 'S', board.b_hand)):
+        return 0
+    if len(board.b_hand) == 0 and any(map(lambda x: x.suit == 'S', board.a_hand)):
+        return 1
+
+    # If about to be Pushed out
+    a_pushes = sorted([x.value for x in board.a_hand if x.suit == 'C'])
+    b_pushes = sorted([x.value for x in board.b_hand if x.suit == 'C'])
+    a_best_pushes = 0
+    b_best_pushes = 0
+    if len(a_pushes) >= 2:
+        a_best_pushes = sum(a_pushes[-2:])
+    elif len(a_pushes) >= 1:
+        a_best_pushes = a_pushes[-1]
+
+    if len(b_pushes) >= 2:
+        b_best_pushes = sum(b_pushes[-2:])
+    elif len(b_pushes) >= 1:
+        b_best_pushes = b_pushes[-1]
+
+    a_throws = sorted([x.value for x in board.a_hand if x.suit == 'S'])
+    b_throws = sorted([x.value for x in board.b_hand if x.suit == 'S'])
+    a_best_throws = 0
+    b_best_throws = 0
+    if len(a_throws) >= 2:
+        a_best_throws = sum(a_throws[-2:])
+    elif len(a_throws) >= 1:
+        a_best_throws = a_throws[-1]
+
+    if len(b_throws) >= 2:
+        b_best_throws = sum(b_throws[-2:])
+    elif len(b_throws) >= 1:
+        b_best_throws = b_throws[-1]
+
+    if board.position == 0 and (max(a_best_pushes, a_best_throws) < b_best_pushes or (len(b_pushes) > 0 and len(b_throws) > 0 and max(a_best_pushes, a_best_throws) < max(b_throws))):
+        return 0
+    if board.position == 2 and (max(b_best_pushes, b_best_throws) < a_best_pushes or (len(a_pushes) > 0 and len(a_throws) > 0 and max(b_best_pushes, b_best_throws) < max(a_throws))):
+        return 1
+
     a_cards = board.a_hand + board.a_discard
     b_cards = board.b_hand + board.b_discard
 
