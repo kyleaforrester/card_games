@@ -168,9 +168,11 @@ impl Board {
         self.prng.shuffle(&mut self.swords);
 
         let mut all_cards = Vec::<Card>::new();
-        for suit in [Suit::Sharpness, Suit::Durability, Suit::Honor, Suit::Balance].iter() {
-            for v in 2..15 {
-                all_cards.push(Card {suit: suit.clone(), value: v});
+        for i in 0..(((self.swords.len()-1)/4)+1) {
+            for suit in [Suit::Sharpness, Suit::Durability, Suit::Honor, Suit::Balance].iter() {
+                for v in 2..15 {
+                    all_cards.push(Card {suit: suit.clone(), value: v});
+                }
             }
         }
         self.prng.shuffle(&mut all_cards);
@@ -269,7 +271,7 @@ impl Board {
         let target_honor: u32 = target.cards.iter().filter(|c| c.suit == Suit::Honor).map(|c| c.value).sum();
 
         if target_honor > sword_honor {
-            self.swords[sword_idx].meditations_remaining = 5;
+            self.swords[sword_idx].meditations_remaining = self.swords.len() as u32 + 1;
             self.log(&format!("{} enters the meditation shrine!", self.swords[sword_idx].name));
         }
 
@@ -309,19 +311,24 @@ impl Board {
                 println!("Target: {}", target.cards.iter().map(|c| c.to_string()).collect::<Vec<_>>().join(","));
             }
 
-            let mut swing_decisions: Vec<(usize, bool, bool, f64)> = Vec::new();
+            let mut swing_decisions: Vec<(usize, bool, f64, f64)> = Vec::new();
             for sword in self.swords.iter().enumerate() {
-                let (decision, predicted_decision, trophy_chance) = if sword.1.meditations_remaining > 0 {
-                    (false, false, 0.0)
+                let (decision, swing_chance, trophy_chance) = if sword.1.meditations_remaining > 0 || sword.1.cards.len() == 0 {
+                    (false, 0.0, 0.0)
                 } else if sword.1.is_human {
-                    let (prediction, cut_chance) = cpu::swing_decision_cpu(sword.1, &target, &swing_decisions, &self.target_deck, &self.discard_pile, self.swords.len());
+                    let (swing_chance, cut_chance) = cpu::swing_decision_cpu(sword.1, &target, &swing_decisions, &self.target_deck, &self.discard_pile, self.swords.len());
                     let dec = self.swing_decision_human(sword.1, &target);
-                    (dec, prediction, cut_chance)
+                    (dec, swing_chance, cut_chance)
                 } else {
-                    let (dec, cut_chance) = cpu::swing_decision_cpu(sword.1, &target, &swing_decisions, &self.target_deck, &self.discard_pile, self.swords.len());
-                    (dec, dec, cut_chance)
+                    let (swing_chance, cut_chance) = cpu::swing_decision_cpu(sword.1, &target, &swing_decisions, &self.target_deck, &self.discard_pile, self.swords.len());
+                    let dec = if swing_chance > self.prng.random() {
+                        true
+                    } else {
+                        false
+                    };
+                    (dec, swing_chance, cut_chance)
                 };
-                swing_decisions.push((sword.0, decision, predicted_decision, trophy_chance));
+                swing_decisions.push((sword.0, decision, swing_chance, trophy_chance));
             }
 
             self.log("");

@@ -27,7 +27,7 @@ fn main() {
 
         match buffer.trim().parse() {
             Ok(num) => {
-                if num >= 1 && num <= 3 {
+                if num >= 1 {
                     break num;
                 }
             },
@@ -38,16 +38,11 @@ fn main() {
         };
     };
 
-    if name == "CPU" {
-        for _ in 0..4 {
-            board.add_sword("", false);
-        }
-    } else {
-        // Add players to board
+    if name != "CPU" {
         board.add_sword(&name, true);
-        for _ in 0..cpus {
-            board.add_sword("", false);
-        }
+    }
+    for _ in 0..cpus {
+        board.add_sword("", false);
     }
 
     // Perform the draft

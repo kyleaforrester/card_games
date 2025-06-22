@@ -30,6 +30,11 @@ impl Prng {
         (new_state.0 >> shift) as u32
     }
 
+    pub fn random(&mut self) -> f64 {
+        // Return the next random floating-point number in the range 0.0 <= X < 1.0
+        self.gen_u32() as f64 / 4294967296u64 as f64
+    }
+
     pub fn choose<'a, T: ?Sized>(&mut self, array: &Vec::<&'a T>) -> &'a T {
         let num: u32 = self.gen_u32();
 

@@ -37,7 +37,7 @@ impl Sword {
             Some(v) => v,
             None => 0,
         };
-        let other_max: u32 = match self.cards.iter().filter(|c| c.suit == Suit::Balance).map(|c| c.value).max() {
+        let other_max: u32 = match other.cards.iter().filter(|c| c.suit == Suit::Balance).map(|c| c.value).max() {
             Some(v) => v,
             None => 0,
         };

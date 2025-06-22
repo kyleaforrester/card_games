@@ -28,69 +28,16 @@ pub fn draft_card_cpu(sword: &Sword, sword_cards: &mut Vec::<Card>, target_deck:
 }
 
 fn evaluate_draft_card(card: &Card, sword: &Sword, target_deck: &Vec<Card>) -> f64 {
-    let current_fail_rate = suit_fail_rate(&card.suit, sword, target_deck);
+    let current_fail_rate = fail_rate(sword, target_deck).0;
 
     let mut new_sword = sword.clone();
     new_sword.cards.push(card.clone());
-    let new_fail_rate = suit_fail_rate(&card.suit, &new_sword, target_deck);
+    let new_fail_rate = fail_rate(&new_sword, target_deck).0;
 
     current_fail_rate - new_fail_rate
 }
 
-fn suit_fail_rate(suit: &Suit, sword: &Sword, target_deck: &Vec<Card>) -> f64 {
-    let cards: f64 = target_deck.len() as f64;
-    let suit_cards_iter = target_deck.iter().filter(|c| c.suit == *suit);
-    let nonsuit_count: f64 = cards - suit_cards_iter.clone().count() as f64;
-    let sword_value: u32 = sword.cards.iter().filter(|c| c.suit == *suit).map(|c| c.value).sum();
-
-
-    let one_card_chance = 4.0 * (1.0 / cards) * (nonsuit_count)/(cards-1.0) * (nonsuit_count-1.0)/(cards-2.0) * (nonsuit_count-2.0)/(cards-3.0);
-    let two_card_chance = 6.0 * (2.0 / cards) * 1.0/(cards-1.0) * (nonsuit_count)/(cards-2.0) * (nonsuit_count-1.0)/(cards-3.0);
-    let three_card_chance = 4.0 * (3.0 / cards) * 2.0/(cards-1.0) * 1.0/(cards-2.0) * (nonsuit_count)/(cards-3.0);
-    let four_card_chance = (4.0 / cards) * 3.0/(cards-1.0) * 2.0/(cards-2.0) * 1.0/(cards-3.0);
-
-    let mut failure_rate = 0.0f64;
-
-    failure_rate += one_card_chance * (suit_cards_iter.clone().filter(|c| c.value > sword_value).count() as f64);
-    //println!("\tSword {} with singles failure rate {} after singles: {}", sword_value, one_card_chance, failure_rate);
-
-    for a in suit_cards_iter.clone().enumerate() {
-        for b in suit_cards_iter.clone().skip(a.0 + 1) {
-            if a.1.value + b.value > sword_value {
-                //println!("\tSword {} Failed {} and {}. Total {}. Adding {}", sword_value, a.1.value, b.value, a.1.value + b.value, two_card_chance);
-                failure_rate += two_card_chance;
-            }
-        }
-    }
-
-    for a in suit_cards_iter.clone().enumerate() {
-        for b in suit_cards_iter.clone().enumerate().skip(a.0 + 1) {
-            for c in suit_cards_iter.clone().skip(b.0 + 1) {
-                if a.1.value + b.1.value + c.value > sword_value {
-                    //println!("\tSword {} Failed {} and {} and {}. Total {}. Adding {}", sword_value, a.1.value, b.1.value, c.value, a.1.value + b.1.value + c.value, three_card_chance);
-                    failure_rate += three_card_chance;
-                }
-            }
-        }
-    }
-
-    for a in suit_cards_iter.clone().enumerate() {
-        for b in suit_cards_iter.clone().enumerate().skip(a.0 + 1) {
-            for c in suit_cards_iter.clone().enumerate().skip(b.0 + 1) {
-                for d in suit_cards_iter.clone().skip(c.0 + 1) {
-                    if a.1.value + b.1.value + c.1.value + d.value > sword_value {
-                        //println!("\tSword {} Failed {} and {} and {} and {}. Total {}. Adding {}", sword_value, a.1.value, b.1.value, c.1.value, d.value, a.1.value + b.1.value + c.1.value + d.value, four_card_chance);
-                        failure_rate += four_card_chance;
-                    }
-                }
-            }
-        }
-    }
-
-    failure_rate
-}
-
-pub fn swing_decision_cpu(sword: &Sword, target: &Target, swing_decisions: &Vec<(usize, bool, bool, f64)>, target_deck: &Vec<Card>, discard_pile: &Vec<Card>, player_count: usize) -> (bool, f64) {
+pub fn swing_decision_cpu(sword: &Sword, target: &Target, swing_decisions: &Vec<(usize, bool, f64, f64)>, target_deck: &Vec<Card>, discard_pile: &Vec<Card>, player_count: usize) -> (f64, f64) {
     let mut full_targets: Vec<Target> = Vec::new();
     let mut sharpness_successes: u32 = 0;
     let mut balance_fails: u32 = 0;
@@ -175,32 +122,43 @@ pub fn swing_decision_cpu(sword: &Sword, target: &Target, swing_decisions: &Vec<
     let durability_fail_rate = durability_fails as f64 / full_targets.len() as f64;
     let honor_fail_rate = honor_fails as f64 / full_targets.len() as f64;
 
-    let cut_chance = match swing_decisions.iter().filter(|s_d| s_d.2).map(|s_d| s_d.3).max_by(|a, b| a.partial_cmp(&b).unwrap()) {
-        Some(m) => sharpness_success_rate - m,
-        None => sharpness_success_rate,
-    };
+    let mut fake_target_deck = target_deck.clone();
+    fake_target_deck.extend(discard_pile.iter().cloned());
+    fake_target_deck.extend(target.cards.iter().cloned());
+    let (_, _, avg_balance_fail_rate, _, avg_honor_fail_rate) = fail_rate(sword, &fake_target_deck);
 
-    let scaled_balance_penalty = if swing_decisions.len() + 1 == player_count {
+    let mut target_intact = 1.0f64;
+    for s_dec in swing_decisions.iter() {
+        target_intact *= 1.0 - s_dec.2 * s_dec.3;
+    }
+    let cut_chance = sharpness_success_rate * target_intact;
+
+    let mut scaled_balance_penalty = if swing_decisions.len() + 1 == player_count {
         // We are the last in balance rank
         0.0
     } else {
-        balance_fail_rate
+        balance_fail_rate * (1.0 - avg_balance_fail_rate)
     };
-    let scaled_balance_penalty = balance_fail_rate * (3.0 - (swing_decisions.len() as f64)) / 3.0 * (49.0 - (sword.trophies * sword.trophies) as f64) / 49.0 * (sword.cards.len() as f64) / 6.0;
-    let scaled_durability_penalty = durability_fail_rate * ((13 - sword.trophies - sword.cards.len() as u32) as f64) / 4.0;
-    let mut scaled_honor_penalty = honor_fail_rate * (sword.cards.len() as f64) / 6.0;
+
+    let scaled_durability_penalty = durability_fail_rate * (((13 - sword.trophies - sword.cards.len() as u32) as f64) / 4.0).powf(2.0);
+
+    let mut scaled_honor_penalty = honor_fail_rate * (1.0 - avg_honor_fail_rate);
     if sword.trophies == 6 {
+        scaled_balance_penalty *= 0.5;
         scaled_honor_penalty *= 0.5;
     };
 
-    let decision = if cut_chance - scaled_balance_penalty - scaled_durability_penalty - scaled_honor_penalty > 0.0 {
-        true
+    // Convert a floating point value where 1.0 is a definite swing, 0.0 is a 50% swing, and -1.0
+    // or less is a 0% swing to a swing_percentage
+    let penalty_sum = scaled_balance_penalty + scaled_durability_penalty + scaled_honor_penalty;
+    let swing_chance = if cut_chance == 0.0 {
+        0.0
     } else {
-        false
+        cut_chance as f64 / (cut_chance + penalty_sum) as f64
     };
 
-    //println!("\t{} sharpness_success: {}, balance_fail: {}, balance_scaled: {}, durability_fail: {} durability_scaled: {}, honor_fail: {}, honor_scaled: {}, cut_chance: {}, decision: {}", sword.name, sharpness_success_rate, balance_fail_rate, scaled_balance_penalty, durability_fail_rate, scaled_durability_penalty, honor_fail_rate, scaled_honor_penalty, cut_chance, cut_chance - scaled_balance_penalty - scaled_durability_penalty - scaled_honor_penalty);
-    return (decision, sharpness_success_rate);
+    //println!("\t{} sharpness_success: {}, balance_fail: {}, avg_balance_fail: {}, balance_fear: {}, durability_fail: {} durability_fear: {}, honor_fail: {}, avg_honor_fail: {}, honor_fear: {}, cut_chance: {}, swing_chance: {}", sword.name, sharpness_success_rate, balance_fail_rate, avg_balance_fail_rate, scaled_balance_penalty, durability_fail_rate, scaled_durability_penalty, honor_fail_rate, avg_honor_fail_rate, scaled_honor_penalty, cut_chance, swing_chance);
+    return (swing_chance, sharpness_success_rate);
 }
 
 pub fn pick_trophy_picker_cpu(sword_idx: usize, target: &Target, swords: &Vec<Sword>, target_deck: &Vec<Card>, discard_pile: &Vec<Card>) -> usize {
@@ -232,7 +190,12 @@ pub fn pick_trophy_picker_cpu(sword_idx: usize, target: &Target, swords: &Vec<Sw
 
 pub fn pick_trophy_cpu(picker_idx: usize, target: &Target, swords: &Vec<Sword>, target_deck: &Vec<Card>, discard_pile: &Vec<Card>) -> usize {
     // Pick the trophy that gives the largest fail_rate difference between yourself and your best opponent
-    let best_opponent_sword = swords.iter().enumerate().filter(|s_tup| s_tup.0 != picker_idx).max_by_key(|s_tup| 5 * (s_tup.1.trophies as i32 + s_tup.1.cards.len() as i32) - s_tup.1.meditations_remaining as i32).unwrap().1;
+    let mut all_target_cards = target_deck.clone();
+    all_target_cards.extend(discard_pile.iter().cloned());
+    all_target_cards.extend(target.cards.iter().cloned());
+    let mut opponent_swords: Vec<(f64, &Sword)> = swords.iter().enumerate().filter(|s_tup| s_tup.0 != picker_idx).map(|s_tup| ((7.0 - s_tup.1.trophies as f64) * fail_rate(s_tup.1, &all_target_cards).0, s_tup.1)).collect::<Vec<_>>(); 
+    opponent_swords.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
+    let best_opponent_sword = &opponent_swords[0].1;
 
     let mut max_score = f64::MIN;
     let mut max_index = 0;
@@ -241,14 +204,11 @@ pub fn pick_trophy_cpu(picker_idx: usize, target: &Target, swords: &Vec<Sword>, 
         all_target_cards_after.extend(discard_pile.iter().cloned());
         all_target_cards_after.extend(target.cards.iter().enumerate().filter(|c| c.0 != c_tup.0).map(|c| c.1).cloned());
         
-        let mut all_target_cards_before = all_target_cards_after.clone();
-        all_target_cards_before.push(c_tup.1.clone());
+        let our_fail_rate_before = fail_rate(&swords[picker_idx], &all_target_cards).0;
+        let opponent_fail_rate_before = fail_rate(best_opponent_sword, &all_target_cards).0;
 
-        let our_fail_rate_before = fail_rate(&swords[picker_idx], &all_target_cards_before);
-        let opponent_fail_rate_before = fail_rate(best_opponent_sword, &all_target_cards_before);
-
-        let our_fail_rate_after = fail_rate(&swords[picker_idx], &all_target_cards_after);
-        let opponent_fail_rate_after = fail_rate(best_opponent_sword, &all_target_cards_after);
+        let our_fail_rate_after = fail_rate(&swords[picker_idx], &all_target_cards_after).0;
+        let opponent_fail_rate_after = fail_rate(best_opponent_sword, &all_target_cards_after).0;
 
         let score = (our_fail_rate_before - our_fail_rate_after) - (opponent_fail_rate_before - opponent_fail_rate_after);
         //println!("{} says best opponent is {}. For card {}: FRB: {}, FRA: {}, OFRB: {}, OFRA: {}, Score: {}", &swords[picker_idx].name, best_opponent_sword.name, c_tup.1, our_fail_rate_before, our_fail_rate_after, opponent_fail_rate_before, opponent_fail_rate_after, score);
@@ -261,9 +221,12 @@ pub fn pick_trophy_cpu(picker_idx: usize, target: &Target, swords: &Vec<Sword>, 
     return max_index;
 }
 
-fn fail_rate(sword: &Sword, target_deck: &Vec<Card>) -> f64 {
+fn fail_rate(sword: &Sword, target_deck: &Vec<Card>) -> (f64, f64, f64, f64, f64) {
     let mut total_targets = 0;
-    let mut failures = 0;
+    let mut sharpness_failures = 0;
+    let mut balance_failures = 0;
+    let mut durability_failures = 0;
+    let mut honor_failures = 0;
 
     let mut sword_sharpness = 0;
     let mut sword_balance = 0;
@@ -296,16 +259,16 @@ fn fail_rate(sword: &Sword, target_deck: &Vec<Card>) -> f64 {
                     }
 
                     if target_sharpness > sword_sharpness {
-                        failures += 1;
+                        sharpness_failures += 1;
                     }
                     if target_balance > sword_balance {
-                        failures += 1;
+                        balance_failures += 1;
                     }
                     if target_durability > sword_durability {
-                        failures += 1;
+                        durability_failures += 1;
                     }
                     if target_honor > sword_honor {
-                        failures += 1;
+                        honor_failures += 1;
                     }
                     total_targets += 1;
                 }
@@ -313,5 +276,6 @@ fn fail_rate(sword: &Sword, target_deck: &Vec<Card>) -> f64 {
         }
     }
 
-    failures as f64 / total_targets as f64
+    let total_failures = sharpness_failures + balance_failures + durability_failures + honor_failures;
+    (total_failures as f64 / total_targets as f64, sharpness_failures as f64 / total_targets as f64, balance_failures as f64 / total_targets as f64, durability_failures as f64 / total_targets as f64, honor_failures as f64 / total_targets as f64)
 }
