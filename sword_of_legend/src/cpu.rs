@@ -133,14 +133,13 @@ pub fn swing_decision_cpu(sword: &Sword, target: &Target, swing_decisions: &Vec<
     }
     let cut_chance = sharpness_success_rate * target_intact;
 
-    let mut scaled_balance_penalty = if swing_decisions.len() + 1 == player_count {
+    let mut scaled_balance_penalty = balance_fail_rate * (1.0 - avg_balance_fail_rate);
+    if swing_decisions.len() + 1 == player_count {
         // We are the last in balance rank
-        0.0
-    } else {
-        balance_fail_rate * (1.0 - avg_balance_fail_rate)
+        scaled_balance_penalty *= 0.5;
     };
 
-    let scaled_durability_penalty = durability_fail_rate * (((13 - sword.trophies - sword.cards.len() as u32) as f64) / 4.0).powf(2.0);
+    let scaled_durability_penalty = durability_fail_rate * 1.5f64.powf(8.0 - sword.trophies as f64 - sword.cards.len() as f64);
 
     let mut scaled_honor_penalty = honor_fail_rate * (1.0 - avg_honor_fail_rate);
     if sword.trophies == 6 {
@@ -154,10 +153,24 @@ pub fn swing_decision_cpu(sword: &Sword, target: &Target, swing_decisions: &Vec<
     let swing_chance = if cut_chance == 0.0 {
         0.0
     } else {
-        cut_chance as f64 / (cut_chance + penalty_sum) as f64
+        let percentage = cut_chance as f64 / (cut_chance + penalty_sum) as f64;
+
+        // Scale the percentage on a sigmoid curve, centered on (0.5,0.5), where x=1 is close to
+        // y=1 and x=0 is close to y=0
+        // e**(16*(x-0.5)) / (e**(16*(x-0.5)) + 1)
+        let exponential = std::f64::consts::E.powf(16.0*(percentage-0.5));
+        let sigmoid = exponential / (exponential + 1.0);
+
+        if sigmoid > 0.99 {
+            1.0
+        } else if sigmoid < 0.01 {
+            0.0
+        } else {
+            sigmoid
+        }
     };
 
-    //println!("\t{} sharpness_success: {}, balance_fail: {}, avg_balance_fail: {}, balance_fear: {}, durability_fail: {} durability_fear: {}, honor_fail: {}, avg_honor_fail: {}, honor_fear: {}, cut_chance: {}, swing_chance: {}", sword.name, sharpness_success_rate, balance_fail_rate, avg_balance_fail_rate, scaled_balance_penalty, durability_fail_rate, scaled_durability_penalty, honor_fail_rate, avg_honor_fail_rate, scaled_honor_penalty, cut_chance, swing_chance);
+    //println!("\t{} sharpness_success: {}, balance_fail: {}, avg_balance_fail: {}, balance_fear: {}, durability_fail: {} durability_fear: {}, honor_fail: {}, avg_honor_fail: {}, honor_fear: {}, cut_chance: {}, percentage: {}, swing_chance: {}", sword.name, sharpness_success_rate, balance_fail_rate, avg_balance_fail_rate, scaled_balance_penalty, durability_fail_rate, scaled_durability_penalty, honor_fail_rate, avg_honor_fail_rate, scaled_honor_penalty, cut_chance, cut_chance as f64 / (cut_chance + penalty_sum) as f64, swing_chance);
     return (swing_chance, sharpness_success_rate);
 }
 
